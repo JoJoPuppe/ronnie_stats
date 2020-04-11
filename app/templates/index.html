@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}">
+    <titel>Warzone Stats</titel>
+      
+  </head>
+  <body>
+    <div class="table-wrapper">
+    <table class="fl-table">
+      <thead>
+      <tr>
+        {% for key, value in stats[0].items() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      </thead>
+      </tbody>
+      {% for player in stats %}
+
+      <tr>
+        {% for key, value in player.items() %}
+          <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </body>
+
+</html>
