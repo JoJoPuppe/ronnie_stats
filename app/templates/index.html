@@ -1,12 +1,11 @@
 <html>
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='rtable.css') }}">
     <titel>Warzone Stats</titel>
       
   </head>
   <body>
-    <div class="table-wrapper">
-    <table class="fl-table">
+    <table>
       <thead>
       <tr>
         {% for key, value in stats[0].items() %}
@@ -19,7 +18,26 @@
 
       <tr>
         {% for key, value in player.items() %}
-          <td>{{ value }}</td>
+        <td data-title="{{ key }}">{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <table>
+      <thead>
+      <tr>
+        {% for key, value in weekly_stats[0].items() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      </thead>
+      </tbody>
+      {% for player in weekly_stats %}
+
+      <tr>
+        {% for key, value in player.items() %}
+        <td data-title="{{ key }}">{{ value }}</td>
         {% endfor %}
       </tr>
       {% endfor %}

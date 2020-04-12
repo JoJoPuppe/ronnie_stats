@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='rtable.css') }}">
+    <titel><h1>WARZONE STATS</h1></titel>
+      
+  </head>
+  <body>
+    <h1>LIFE TIME STATS</h1>
+    <table>
+      <thead>
+      <tr>
+        {% for key, value in stats[0].items() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      </thead>
+      </tbody>
+      {% for player in stats %}
+
+      <tr>
+        {% for key, value in player.items() %}
+        <td data-title="{{ key }}">{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h1>WEEKLY TRIO STATS</h1>
+    <table>
+      <thead>
+      <tr>
+        {% for key, value in wk_trio_stats[0].items() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      </thead>
+      </tbody>
+      {% for player in wk_trio_stats %}
+
+      <tr>
+        {% for key, value in player.items() %}
+        <td data-title="{{ key }}">{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h1>WEEKLY QUAD STATS</h1>
+    <table>
+      <thead>
+      <tr>
+        {% for key, value in wk_quad_stats[0].items() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      </thead>
+      </tbody>
+      {% for player in wk_quad_stats %}
+
+      <tr>
+        {% for key, value in player.items() %}
+        <td data-title="{{ key }}">{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+     <h1>WEEKLY SOLO STATS</h1>
+    <table>
+      <thead>
+      <tr>
+        {% for key, value in wk_solo_stats[0].items() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      </thead>
+      </tbody>
+      {% for player in wk_solo_stats %}
+
+      <tr>
+        {% for key, value in player.items() %}
+        <td data-title="{{ key }}">{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
+

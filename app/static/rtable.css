@@ -1,0 +1,125 @@
+/* 
+Generic Styling, for Desktops/Laptops  011627-071c2d-172938-2db7c4-e71d36
+*/
+
+
+@import url(https://fonts.googleapis.com/css2?family=Teko:wght@300;500;700);
+
+table {
+  width: 100%; 
+  border-collapse: collapse;
+  margin: 10px;
+}
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+  background: #011627;
+}
+tr {
+  background: #071c2d;
+}
+th { 
+  background: #001020; 
+  color: #AA2A38; 
+  font-weight: bold; 
+}
+td, th { 
+  padding: 6px; 
+  border-bottom: 1px solid #172938;
+  text-align: left; 
+}
+
+/* Page styling
+================================== */
+
+html { 
+  height: 100%;
+  background-color: #111; 
+}
+body {
+  box-sizing: border-box;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 2em;
+  max-width: 1400px;
+  font-family: 'Teko', sans-serif;
+  font-size: 1.4em;
+  color:#A7A1AE;
+  background-color:#111;
+  border: solid #1F2739;
+  border-top: none; border-bottom: none;
+}
+h1 {
+  margin: 0;
+}
+
+/* 
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+	/* Force table to not be like tables anymore */
+	table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	tr { border: solid @bw #1F2739; }
+	
+	td { 
+		/* Behave  like a "row" */
+		border: none;
+		/*border-bottom: 1px solid #FF2739; */
+		position: relative;
+		padding-left: 50%; 
+	}
+	
+	td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	/*
+	Label the data
+	*/
+	td:nth-of-type(1):before { content: attr(data-title); }
+	td:nth-of-type(2):before { content: attr(data-title); }
+	td:nth-of-type(3):before { content: attr(data-title); }
+	td:nth-of-type(4):before { content: attr(data-title); }
+	td:nth-of-type(5):before { content: attr(data-title); }
+	td:nth-of-type(6):before { content: attr(data-title); }
+	td:nth-of-type(7):before { content: attr(data-title); }
+	td:nth-of-type(8):before { content: attr(data-title); }
+	td:nth-of-type(9):before { content: attr(data-title); }
+	td:nth-of-type(10):before { content: attr(data-title); }
+  td:nth-of-type(11):before { content: attr(data-title); }
+  td:nth-of-type(12):before { content: attr(data-title); }
+  td:nth-of-type(13):before { content: attr(data-title); }
+  td:nth-of-type(14):before { content: attr(data-title); }
+  td:nth-of-type(15):before { content: attr(data-title); }
+  td:nth-of-type(16):before { content: attr(data-title); }
+  td:nth-of-type(17):before { content: attr(data-title); }
+  td:nth-of-type(18):before { content: attr(data-title); }
+  td:nth-of-type(19):before { content: attr(data-title); }
+  td:nth-of-type(20):before { content: attr(data-title); }
+  td:nth-of-type(21):before { content: attr(data-title); }
+  td:nth-of-type(22):before { content: attr(data-title); }
+  td:nth-of-type(23):before { content: attr(data-title); }
+  td:nth-of-type(24):before { content: attr(data-title); }
+  td:nth-of-type(25):before { content: attr(data-title); }
+}
