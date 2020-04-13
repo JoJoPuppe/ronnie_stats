@@ -1,4 +1,5 @@
 import requests
+import time
 import simplejson as ss
 
 class WarzoneStats(object):
@@ -11,10 +12,14 @@ class WarzoneStats(object):
     def request_playerdata(self, url):
         r = requests.get(self.Stats_URL)
         status = r.status_code
-        print(status)
+        cnt = 0
+        while cnt < 5 or status != 200:
+            print("no data received - waiting 5sec")
+            time.sleep(5)
+            cnt += 1
+
         if status != 200:
-            print("no data received")
-            self.data = None
+            print(f"can not get {self.playername} data")
         else:
             self.data = r.json()['data']
 
