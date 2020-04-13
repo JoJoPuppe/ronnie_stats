@@ -1,11 +1,36 @@
 <html>
   <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='rtable.css') }}">
+    <script src="{{ url_for('static', filename='jquery-3.5.0.min.js') }}"></script>
+    <script>
+      function revert_tables() {
+      $("table").each(function () {
+          var $this = $(this);
+          var newrows = [];
+          $this.find("tr").each(function () {
+              var i = 0;
+              $(this).find("td,th").each(function () {
+                  i++;
+                  if (newrows[i] === undefined) {
+                      newrows[i] = $("<tr></tr>");
+                  }
+                  newrows[i].append($(this));
+              });
+          });
+          $this.find("tr").remove();
+          $.each(newrows, function () {
+              $this.append(this);
+          });
+      });
+
+    return false;
+    };
+    </script>
     <titel><h1>WARZONE STATS</h1></titel>
       
   </head>
-  <body>
-    <h1>LIFE TIME STATS</h1>
+  <body onload="revert_tables()">
+    <h2>LIFE TIME STATS</h1>
     <table>
       <thead>
       <tr>
@@ -25,7 +50,7 @@
       {% endfor %}
       </tbody>
     </table>
-    <h1>WEEKLY TRIO STATS</h1>
+    <h2>WEEKLY TRIO STATS</h1>
     <table>
       <thead>
       <tr>
@@ -45,7 +70,7 @@
       {% endfor %}
       </tbody>
     </table>
-    <h1>WEEKLY QUAD STATS</h1>
+    <h2>WEEKLY QUAD STATS</h1>
     <table>
       <thead>
       <tr>
@@ -65,7 +90,7 @@
       {% endfor %}
       </tbody>
     </table>
-     <h1>WEEKLY SOLO STATS</h1>
+    <h2>WEEKLY SOLO STATS</h1>
     <table>
       <thead>
       <tr>
