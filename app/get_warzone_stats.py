@@ -1,31 +1,34 @@
 import requests
 import time
 import simplejson as ss
+import re
 
 class WarzoneStats(object):
     def __init__(self, playername):
+        self.email = 'marcusloeper@gmx.de'
+        self.pw = '01hzkdfbwx389f'
         self.playername = playername
         self.GAMEMODES = {'SOLO': 'br_87', 'TRIO': 'br_25', 'QUAD': 'br_89'}
+        self.Xsrf_token_URL = 'https://profile.callofduty.com/cod/login'
+        self.Auth_URL = 'https://profile.callofduty.com/do_login?new_SiteId=cod'
         self.Stats_URL = 'https://my.callofduty.com/api/papi-client/stats/cod/v1/title/mw/platform/psn/gamer/' + self.playername + '/profile/type/wz'
-        self.player_stats = self.collect_data()
 
-    def request_playerdata(self, url):
-        r = requests.get(self.Stats_URL)
-        status = r.status_code
-        cnt = 0
-        while cnt < 5 or status != 200:
-            print("no data received - waiting 5sec")
-            time.sleep(5)
-            cnt += 1
+    def request_playerdata(self):
+        s = requests.Session()
 
-        if status != 200:
-            print(f"can not get {self.playername} data")
-        else:
-            self.data = r.json()['data']
+        r = s.get(self.Xsrf_token_URL)
+        xsrf_token = r.cookies['XSRF-TOKEN']
+        print(xsrf_token)
+        payload = {'username': self.email, 'password': self.pw,
+                   'remember_me':'true', '_csrf': xsrf_token}
 
+        r = s.post(self.Auth_URL, data=payload)
+        r = s.get(self.Stats_URL)
+
+        self.data = r.json()['data']
 
     def collect_data(self):
-        self.request_playerdata(self.Stats_URL)
+        self.request_playerdata()
 
         collected_data = {}
 
