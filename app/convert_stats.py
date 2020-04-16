@@ -19,7 +19,6 @@ class DataConverter(object):
         self.WK_Table_Performance = ['Player','KillsPerGame', 'ScorePerMinute', 'AvgLifeTime']
         self.WK_Table_Performance_data = ['playername', 'killsPerGame', 'scorePerMinute', 'avgLifeTime']
 
-
     def from_database_life_time_stats(self):
         return LifeTimeStats.query.group_by(LifeTimeStats.playername).having(func.max(LifeTimeStats.timestamp)).all()
 
@@ -32,6 +31,18 @@ class DataConverter(object):
         d["minutes"], d["seconds"] = divmod(sec, 60)
         d["hours"], d["minutes"] = divmod(d["minutes"], 60)
         return fmt.format(**d)
+
+    def rows_to_columns(self, game_data):
+        stats_list = []
+        for k, v in game_data[0].items():
+            property_list = []
+            property_list.append(k)
+            for player in game_data:
+                property_list.append(player[k])
+
+            stats_list.append(property_list)
+
+        return stats_list
 
     def create_WK_table(self, mode='TRIO'):
         q = self.from_database_weekly(mode)
@@ -52,6 +63,8 @@ class DataConverter(object):
             player_stats_dict['Time'] = self.strfdelta(seconds, "{hours}h {minutes}m")
 
             self.player_wk_core_stats.append(player_stats_dict)
+
+        self.player_wk_core_stats = self.rows_to_columns(self.player_wk_core_stats)
 
         return self.player_wk_core_stats
 
@@ -74,6 +87,8 @@ class DataConverter(object):
             player_stats_dict['Time'] = self.strfdelta(seconds, "{hours}h {minutes}m")
 
             self.player_stats_list.append(player_stats_dict)
+
+        self.player_stats_list = self.rows_to_columns(self.player_stats_list)
 
         return self.player_stats_list
 

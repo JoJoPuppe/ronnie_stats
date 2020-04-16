@@ -18,7 +18,6 @@ class WarzoneStats(object):
 
         r = s.get(self.Xsrf_token_URL)
         xsrf_token = r.cookies['XSRF-TOKEN']
-        print(xsrf_token)
         payload = {'username': self.email, 'password': self.pw,
                    'remember_me':'true', '_csrf': xsrf_token}
 

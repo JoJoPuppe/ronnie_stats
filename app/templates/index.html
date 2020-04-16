@@ -1,48 +1,61 @@
 <html>
   <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='rtable.css') }}">
-    <titel>Warzone Stats</titel>
-      
+    <titel><h1>WARZONE STATS</h1></titel>
   </head>
   <body>
+    <h2>LIFE TIME STATS</h1>
     <table>
-      <thead>
-      <tr>
-        {% for key, value in stats[0].items() %}
-        <th>{{ key }}</th>
-        {% endfor %}
-      </tr>
-      </thead>
-      </tbody>
+      <tbody>
       {% for player in stats %}
 
       <tr>
-        {% for key, value in player.items() %}
-        <td data-title="{{ key }}">{{ value }}</td>
+        {% for stat in player %}
+        <td data-title="{{ stat }}">{{ stat }}</td>
         {% endfor %}
       </tr>
       {% endfor %}
       </tbody>
     </table>
+    <h2>WEEKLY TRIO STATS</h1>
     <table>
-      <thead>
-      <tr>
-        {% for key, value in weekly_stats[0].items() %}
-        <th>{{ key }}</th>
-        {% endfor %}
-      </tr>
-      </thead>
-      </tbody>
-      {% for player in weekly_stats %}
+      <tbody>
+      {% for player in wk_trio_stats %}
 
       <tr>
-        {% for key, value in player.items() %}
-        <td data-title="{{ key }}">{{ value }}</td>
+        {% for stat in player %}
+        <td data-title="{{ stat }}">{{ stat }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h2>WEEKLY QUAD STATS</h1>
+    <table>
+      <tbody>
+      {% for player in wk_quad_stats %}
+
+      <tr>
+        {% for stat in player %}
+        <td data-title="{{ stat }}">{{ stat }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h2>WEEKLY SOLO STATS</h1>
+    <table>
+      <tbody>
+      {% for player in wk_solo_stats %}
+
+      <tr>
+        {% for stat in player %}
+        <td data-title="{{ stat }}">{{ stat }}</td>
         {% endfor %}
       </tr>
       {% endfor %}
       </tbody>
     </table>
   </body>
-
 </html>
+
