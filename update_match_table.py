@@ -7,9 +7,11 @@ from sqlalchemy import and_
 
 NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli']
 
+
+#NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli',
+#         'kiishonsuu', 'br3mm3l', 'bratlos', 'camarlengo', 'knabenbube', 'schwabilton']
+
 for name in NAMES:
-    print("delay next request by 3s")
-    time.sleep(3)
     get_stat_obj = WarzoneStats(name)
     jdata = get_stat_obj.collect_match_data()
 
@@ -20,7 +22,7 @@ for name in NAMES:
         q = MatchStats.query.filter(and_(MatchStats.matchID == matchid,
                                          MatchStats.playername == name)).first()
         if q != None:
-            print('match already in db')
+            print(f'match of {name} already in db')
             continue
 
         record = MatchStats(
@@ -67,5 +69,8 @@ for name in NAMES:
                     damageTaken = int(m['MatchPlayerStats']['damageTaken']))
 
         db.session.add(record_player)
+
+    print("delay next request by 3s")
+    time.sleep(3)
 
 db.session.commit()

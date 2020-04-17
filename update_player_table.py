@@ -2,12 +2,23 @@ from app import app
 from app import db
 from app.models import LifeTimeStats, WeeklyStats
 from app.get_warzone_stats import WarzoneStats
+import time
 
 NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli']
+
+#NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli',
+#         'kiishonsuu', 'br3mm3l', 'bratlos', 'camarlengo', 'knabenbube', 'schwabilton']
 
 for name in NAMES:
     get_stat_obj = WarzoneStats(name)
     jdata = get_stat_obj.collect_player_data()
+
+    time_played = jdata['br_lifetime']['timePlayed']
+
+    q = LifeTimeStats.query.filter(LifeTimeStats.timePlayed == time_played).first()
+    if q != None:
+        print(f'no change of playingtime of {name}')
+        continue
 
     record = LifeTimeStats(
                 playername = jdata['br_lifetime']['name'],
@@ -50,6 +61,8 @@ for name in NAMES:
                     circle3 = int(jdata['br_weekly'][k]['properties']['objectiveBrDownEnemyCircle3']),
                     circle4 = int(jdata['br_weekly'][k]['properties']['objectiveBrDownEnemyCircle4']),
                     circle5 = int(jdata['br_weekly'][k]['properties']['objectiveBrDownEnemyCircle5']),
+                    circle6 = int(jdata['br_weekly'][k]['properties']['objectiveBrDownEnemyCircle6']),
+                    circle7 = int(jdata['br_weekly'][k]['properties']['objectiveBrDownEnemyCircle7']),
                     pickupTablet = int(jdata['br_weekly'][k]['properties']['objectiveBrMissionPickupTablet']),
                     revives = int(jdata['br_weekly'][k]['properties']['objectiveReviver']),
                     boxesOpen = int(jdata['br_weekly'][k]['properties']['objectiveBrCacheOpen']),
@@ -60,6 +73,9 @@ for name in NAMES:
         )
 
         db.session.add(record_weekly)
+
+    print("delay next request by 3s")
+    time.sleep(3)
 
 db.session.commit()
 

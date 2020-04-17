@@ -164,7 +164,7 @@ class WarzoneStats(object):
     def validate_match_data(self, raw_data):
         MATCH_STATS = ['utcStartSecond', 'utcEndSeconds', 'matchID', 'duration', 'playerCount', 'teamCount', 'playername', 'gameMode']
 
-        MATCH_PLAYER_STATS = ['matchID', 'playername', 'kill', 'medalXp', 'matchXp', 'scoreXp', 'score', 'totalXp', 'headshots', 'assists', 'challengeXp', 'scorePerMinute', 'distanceTraveled', 'timeSurvivalTime', 'deaths', 'kdRatio', 'objectiveBrKioskBuy', 'objectiveLastStandKill', 'objectiveBrCacheOpen', 'objectiveTeamWiped', 'objectiveBrMissionPickupTablet', 'bonusXp', 'timePlayed', 'percentTimeMoving', 'miscXp', 'longestStreak', 'teamPlacement', 'damageDone', 'damageTaken']
+        MATCH_PLAYER_STATS = ['matchID', 'playername', 'kill', 'medalXp', 'matchXp', 'scoreXp', 'score', 'totalXp', 'headshots', 'assists', 'challengeXp', 'scorePerMinute', 'distanceTraveled', 'teamSurvivalTime', 'deaths', 'kdRatio', 'objectiveBrKioskBuy', 'objectiveLastStandKill', 'objectiveBrCacheOpen', 'objectiveTeamWiped', 'objectiveBrMissionPickupTablet', 'bonusXp', 'timePlayed', 'percentTimeMoving', 'miscXp', 'longestStreak', 'teamPlacement', 'damageDone', 'damageTaken']
         for stat in MATCH_STATS:
             if stat not in raw_data['MatchStat']:
                 raw_data['MatchStat'][stat] = 0
