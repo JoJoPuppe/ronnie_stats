@@ -46,6 +46,8 @@ class WeeklyStats(db.Model):
     circle3 = db.Column(db.Integer)
     circle4 = db.Column(db.Integer)
     circle5 = db.Column(db.Integer)
+    circle6 = db.Column(db.Integer)
+    circle7 = db.Column(db.Integer)
     pickupTablet = db.Column(db.Integer)
     revives = db.Column(db.Integer)
     shopping = db.Column(db.Integer)
@@ -55,4 +57,55 @@ class WeeklyStats(db.Model):
     damageTaken = db.Column(db.Integer)
 
     def __repr__(self):
-        return f'Player: {self.playername}, timestamp: {self.timestamp.strftime("%H:%M:%S") }, played: {self.timePlayed}'
+        return f'Player: {self.playername}, timestamp: {self.timestamp.strftime("%m-%d-%H:%M")}'
+
+class MatchStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    utcStartSeconds = db.Column(db.Integer)
+    utcEndSeconds = db.Column(db.Integer)
+    playername = db.Column(db.String(64))
+    gameMode = db.Column(db.String(32))
+    matchID = db.Column(db.String(64))
+    duration = db.Column(db.Integer)
+    playerCount = db.Column(db.Integer)
+    teamCount = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'Match: {self.matchID}, timestamp: {self.timestamp.strftime("%m-%d-%H:%M")}'
+
+class MatchPlayerStats(db.Model) :
+    id = db.Column(db.Integer, primary_key=True)
+    matchID = db.Column(db.String(64))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    playername = db.Column(db.String(64))
+    kills = db.Column(db.Integer)
+    medalXp = db.Column(db.Integer)
+    matchXp = db.Column(db.Integer)
+    scoreXp = db.Column(db.Integer)
+    score = db.Column(db.Integer)
+    totalXp = db.Column(db.Integer)
+    headshots = db.Column(db.Integer)
+    assists = db.Column(db.Integer)
+    challengeXp = db.Column(db.Integer)
+    scorePerMinute = db.Column(db.Integer)
+    distanceTraveled = db.Column(db.Integer)
+    teamSurvivalTime = db.Column(db.Integer)
+    deaths = db.Column(db.Integer)
+    kdRatio = db.Column(db.Float)
+    objectiveBrMissionPickupTablet = db.Column(db.Integer)
+    objectiveBrCacheOpen = db.Column(db.Integer)
+    objectiveTeamWiped = db.Column(db.Integer)
+    objectiveLastStandKill = db.Column(db.Integer)
+    objectiveBrKioskBuy = db.Column(db.Integer)
+    bonusXp = db.Column(db.Integer)
+    timePlayed = db.Column(db.Integer)
+    percentTimeMoving = db.Column(db.Float)
+    miscXp = db.Column(db.Integer)
+    longestStreak = db.Column(db.Integer)
+    teamPlacement = db.Column(db.Integer)
+    damageDone = db.Column(db.Integer)
+    damageTaken = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'Match: {self.matchID}, player: {self.playername}, timestamp: {self.timestamp.strftime("%m-%d-%H:%M")}'

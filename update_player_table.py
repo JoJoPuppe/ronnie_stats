@@ -7,7 +7,7 @@ NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli
 
 for name in NAMES:
     get_stat_obj = WarzoneStats(name)
-    jdata = get_stat_obj.collect_data()
+    jdata = get_stat_obj.collect_player_data()
 
     record = LifeTimeStats(
                 playername = jdata['br_lifetime']['name'],
