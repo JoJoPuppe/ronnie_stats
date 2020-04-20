@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
   </head>
-  <body class="flex items-center justify-center min-h-screen p-8 text-gray-800 bg-gray-200">
-    <div class="md:flex md:justify-center md:items-center md:flex-wrap">
+  <body class="flex items-baseline justify-center min-h-screen p-8 text-gray-800 bg-gray-200">
+    <div class="md:flex md:justify-center md:items-baseline md:flex-wrap">
       {% for player in stats %}
       <div class="w-64 m-2 overflow-hidden bg-gray-300 rounded-lg">
         <div class="flex items-baseline justify-between bg-teal-300">

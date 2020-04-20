@@ -11,10 +11,10 @@ class DataConverter(object):
                               'gamesPlayed', 'timePlayed', 'contracts']
 
         self.WK_Table_Core = ['Player', 'Wins', 'Kills', 'Headshots', 'Deaths', 'KD', 'Score', 'Teamwipes', 'Revives', 'Damage', 'Wounded', 'Games', 'Time']
-        self.WK_Table_Core_data = ['playername', 'wins', 'kills', 'headshots', 'deaths', 'kdRatio', 'score', 'TeamWipes', 'revives', 'damageDone', 'damageTaken', 'matchesPlayed', 'timePlayed']
+        self.WK_Table_Core_data = ['playername', 'wins', 'kills', 'headshots', 'deaths', 'kdRatio', 'score', 'teamWipes', 'revives', 'damageDone', 'damageTaken', 'matchesPlayed', 'timePlayed']
 
         self.WK_Table_Other = ['Player', 'Last Stand Kills', 'Shop', 'Pick Up Tablet', 'Open Boxes', 'Traveled', 'Circle 1', 'Circle 2', 'Circle 3', 'Circle 4', 'Circle 5']
-        self.WK_Table_Other_data = ['playername', 'LastStandKills', 'shopping', 'pickupTablet', 'boxesOpen', 'distanceTraveled', 'circle1', 'circle2', 'circle3', 'circle4', 'circle5']
+        self.WK_Table_Other_data = ['playername', 'lastStandKills', 'shopping', 'pickupTablet', 'boxesOpen', 'distanceTraveled', 'circle1', 'circle2', 'circle3', 'circle4', 'circle5']
 
         self.WK_Table_Performance = ['Player','KillsPerGame', 'ScorePerMinute', 'AvgLifeTime']
         self.WK_Table_Performance_data = ['playername', 'killsPerGame', 'scorePerMinute', 'avgLifeTime']
@@ -51,7 +51,6 @@ class DataConverter(object):
         for player in q:
             player_stats_dict = {}
             player_stats = vars(player)
-            print(player_stats)
             if '_sa_instance_state' in player_stats:
                 del player_stats['_sa_instance_state']
             for out_name, data_name in zip(self.WK_Table_Core, self.WK_Table_Core_data):
@@ -78,7 +77,6 @@ class DataConverter(object):
             if '_sa_instance_state' in player_stats:
                 del player_stats['_sa_instance_state']
             for out_name, data_name in zip(self.LT_Table, self.LT_data_Table):
-                print(out_name, data_name)
                 player_stats_dict[out_name] = player_stats[data_name]
 
             player_stats_dict['KD'] = round(player_stats_dict['KD'], 2)
