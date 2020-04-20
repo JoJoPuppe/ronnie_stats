@@ -4,6 +4,7 @@ import simplejson as ss
 import re
 import os
 
+
 class WarzoneStats(object):
     def __init__(self, playername):
         self.email = 'marcusloeper@gmx.de'

@@ -88,7 +88,7 @@ class DataConverter(object):
 
             self.player_stats_list.append(player_stats_dict)
 
-        self.player_stats_list = self.rows_to_columns(self.player_stats_list)
+        #self.player_stats_list = self.rows_to_columns(self.player_stats_list)
 
         return self.player_stats_list
 

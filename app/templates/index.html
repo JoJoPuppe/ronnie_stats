@@ -1,61 +1,86 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='rtable.css') }}">
-    <titel><h1>WARZONE STATS</h1></titel>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
   </head>
-  <body>
-    <h2>LIFE TIME STATS</h1>
-    <table>
-      <tbody>
+  <body class="flex items-center justify-center min-h-screen p-8 text-gray-800 bg-gray-200">
+    <div class="md:flex md:justify-center md:items-center md:flex-wrap">
       {% for player in stats %}
-
-      <tr>
-        {% for stat in player %}
-        <td data-title="{{ stat }}">{{ stat }}</td>
-        {% endfor %}
-      </tr>
+      <div class="w-64 m-2 overflow-hidden bg-gray-300 rounded-lg">
+        <div class="flex items-baseline justify-between bg-teal-300">
+          <div class="p-3 bg-teal-400">
+            <div class="flex items-baseline justify-center">
+              <svg class="w-4 h-4 text-teal-800 fill-current" version="1.1" id="Trophy" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
+              <g>
+                <path d="M11.18,14.356c0-1.451,1.1-2.254,2.894-3.442C16.268,9.458,19,7.649,19,3.354
+                  c0-0.387-0.317-0.699-0.709-0.699h-3.43C14.377,1.759,12.932,0.8,10,0.8c-2.934,0-4.377,0.959-4.862,1.855H1.707
+                  C1.316,2.655,1,2.968,1,3.354c0,4.295,2.73,6.104,4.926,7.559c1.794,1.188,2.894,1.991,2.894,3.442v1.311
+                  c-1.884,0.209-3.269,0.906-3.269,1.736c0,0.994,1.992,1.799,4.449,1.799s4.449-0.805,4.449-1.799c0-0.83-1.385-1.527-3.269-1.736
+                  C11.18,15.666,11.18,14.356,11.18,14.356z M13.957,9.3c0.566-1.199,1.016-2.826,1.088-5.246h2.51
+                  C17.315,6.755,15.693,8.118,13.957,9.3z M10,2.026c2.732-0.002,3.799,1.115,3.798,1.529c0,0.418-1.066,1.533-3.798,1.535
+                  C7.268,5.089,6.201,3.974,6.201,3.556C6.2,3.142,7.268,2.024,10,2.026z M2.445,4.054h2.509C5.027,6.474,5.475,8.101,6.043,9.3
+                  C4.307,8.118,2.684,6.755,2.445,4.054z"/>
+              </g>
+              </svg>
+              <span class="ml-1 text-xl font-extrabold">{{ player.Wins }}</span>
+            </div>
+          </div>
+          <p class="pr-3 text-2xl font-black">{{ player.Player }}</p>
+        </div>
+        <div class="px-6">
+          <div class="py-4 border-b border-gray-500">
+            <div class="flex items-center justify-between pb-2">
+              <p class="text-lg font-semibold tracking-tight">K/D:<span class="ml-2 text-xl font-black tracking-wide">{{ player.KD }}</span></p>
+              <p class="text-lg font-semibold tracking-tight">deaths:<span class="ml-2 text-xl font-black tracking-wide">{{ player.Deaths }}</span></p>
+            </div>
+            <div class="flex items-center justify-between">
+              <p class="text-lg font-semibold tracking-tight">kills:<span class="ml-2 text-xl font-black tracking-wide">{{ player.Kills }}</span></p>
+              <p class="text-lg font-semibold tracking-tight">downs:<span class="ml-2 text-xl font-black tracking-wide">{{ player.Downs }}</span></p>
+            </div>
+          </div>
+          <div class="flex items-center justify-around py-3 border-b border-gray-500">
+            <div class="text-center"><h4 class="text-sm uppercase">t25</h4><p class="text-lg font-bold">{{ player.TOP25 }}</p></div>
+            <div class="text-center"><h4 class="text-sm uppercase">t10</h4><p class="text-lg font-bold">{{ player.TOP10 }}</p></div>
+            <div class="text-center"><h4 class="text-sm uppercase">t5</h4><p class="text-lg font-bold">{{ player.TOP5 }}</p></div>
+          </div>
+          <div class="py-3">
+            <p class="text-sm font-bold tracking-wide text-gray-700 uppercase">playtime:<span class="ml-2 text-base font-normal lowercase">{{ player.Time }}</span></p>
+          </div>
+        </div>
+        <div class="px-6 bg-gray-400">
+          <div x-data="{ open: false }">
+            <button class="py-3 focus:outline-none" @click="open = !open">
+                <svg x-show="!open" class="w-5 h-5 text-teal-600 fill-current" version="1.1" id="Circled_plus" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+                   y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
+                  <path d="M10,1.6c-4.639,0-8.4,3.761-8.4,8.4s3.761,8.4,8.4,8.4s8.4-3.761,8.4-8.4S14.639,1.6,10,1.6z M15,11h-4v4H9
+                  v-4H5V9h4V5h2v4h4V11z"/>
+                </svg>
+                <svg x-show="open" class="w-5 h-5 text-teal-600 fill-current" version="1.1" id="Circled_minus" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+                   y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
+                  <path d="M10,1.6c-4.639,0-8.4,3.761-8.4,8.4s3.761,8.4,8.4,8.4s8.4-3.761,8.4-8.4S14.639,1.6,10,1.6z M15,11H5V9h10
+                  V11z"/>
+                </svg>
+            </button>
+            <div class="" x-show="open">
+              <div class="flex justify-between py-3 font-light border-t border-gray-500">
+                <p class="text-sm">score:<span class="ml-1 font-bold">{{ player.Score }}</span></p>
+                <p class="text-sm">score/min<span class="ml-1 font-bold">{{ player.ScoreMin }}</span></p>
+              </div>
+              <div class="flex justify-between pb-4 font-light">
+                <p class="text-sm">games:<span class="ml-1 font-bold">{{ player.Games }}</span></p>
+                <p class="text-sm">contracts<span class="ml-1 font-bold">{{ player.Contracts }}</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {% endfor %}
-      </tbody>
-    </table>
-    <h2>WEEKLY TRIO STATS</h1>
-    <table>
-      <tbody>
-      {% for player in wk_trio_stats %}
-
-      <tr>
-        {% for stat in player %}
-        <td data-title="{{ stat }}">{{ stat }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    <h2>WEEKLY QUAD STATS</h1>
-    <table>
-      <tbody>
-      {% for player in wk_quad_stats %}
-
-      <tr>
-        {% for stat in player %}
-        <td data-title="{{ stat }}">{{ stat }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    <h2>WEEKLY SOLO STATS</h1>
-    <table>
-      <tbody>
-      {% for player in wk_solo_stats %}
-
-      <tr>
-        {% for stat in player %}
-        <td data-title="{{ stat }}">{{ stat }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    </div>
   </body>
 </html>
-

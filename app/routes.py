@@ -12,6 +12,7 @@ from app.convert_stats import DataConverter
 def index():
     data = DataConverter()
     life_time_table = data.create_LT_table()
+    #print(life_time_table[0]['Time'])
     wk_trio_table = data.create_WK_table('TRIO')
     wk_quad_table = data.create_WK_table('QUAD')
     wk_solo_table = data.create_WK_table('SOLO')

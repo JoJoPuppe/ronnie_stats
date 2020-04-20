@@ -2,14 +2,24 @@ from app import app
 from app import db
 from app.models import MatchStats, MatchPlayerStats
 from app.get_warzone_stats import WarzoneStats
+import os
 import time
 from sqlalchemy import and_
+import re
+import logging
 
-NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli']
+from stats_config import WARZONE_CONFIG
+
+#NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli']
+
+LOG_FILE = WARZONE_CONFIG['LOGFILE']
+
+logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-#NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli',
-#         'kiishonsuu', 'br3mm3l', 'bratlos', 'camarlengo', 'knabenbube', 'schwabilton']
+
+NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli',
+         'kiishonsuu', 'br3mm3l', 'bratlos', 'camarlengo', 'knabenbube', 'schwabilton']
 
 for name in NAMES:
     get_stat_obj = WarzoneStats(name)
@@ -19,10 +29,19 @@ for name in NAMES:
 
         matchid = str(m['MatchStat']['matchID'])
 
+        converted_playername = re.sub(r'^\[.*\]','', m["MatchStat"]['playername']).lower()
+        if(converted_playername == 'br3mmel'):
+            converted_playername = 'br3mm3l'
+        if(converted_playername == 'camarleng0'):
+            converted_playername = 'camarlengo'
+
         q = MatchStats.query.filter(and_(MatchStats.matchID == matchid,
                                          MatchStats.playername == name)).first()
-        if q != None:
-            print(f'match of {name} already in db')
+        if q == None:
+            epoch = m['MatchStat']['utcStartSeconds']
+            start_match_time = time.strftime("%a, %d%b%Y %H:%M:%S", time.localtime(epoch))
+            logging.info(f'match {start_match_time} of {name} added')
+        else:
             continue
 
         record = MatchStats(
@@ -32,13 +51,13 @@ for name in NAMES:
                     duration = int(m["MatchStat"]['duration']),
                     playerCount = int(m["MatchStat"]['playerCount']),
                     teamCount = int(m["MatchStat"]['teamCount']),
-                    playername = m["MatchStat"]['playername'],
+                    playername = converted_playername,
                     gameMode = m["MatchStat"]['gameMode']
         )
         db.session.add(record)
 
         record_player = MatchPlayerStats(
-                    playername = m['MatchPlayerStats']['playername'],
+                    playername = converted_playername,
                     matchID = str(m['MatchPlayerStats']['matchID']),
                     kills = int(m['MatchPlayerStats']['kills']),
                     medalXp = int(m['MatchPlayerStats']['medalXp']),
@@ -70,7 +89,7 @@ for name in NAMES:
 
         db.session.add(record_player)
 
-    print("delay next request by 3s")
+    logging.info(f'matches of {name} done. wait 3s')
     time.sleep(3)
 
 db.session.commit()
