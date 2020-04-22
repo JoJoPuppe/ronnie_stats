@@ -3,12 +3,13 @@ import time
 import simplejson as ss
 import re
 import os
+from stats_config import WARZONE_CONFIG
 
 
 class WarzoneStats(object):
     def __init__(self, playername):
-        self.email = 'marcusloeper@gmx.de'
-        self.pw = '01hzkdfbwx389f'
+        self.email = WARZONE_CONFIG['EMAIL']
+        self.pw = WARZONE_CONFIG['PW']
         self.playername = playername
         self.GAMEMODES = {'br_87': 'SOLO', 'br_25': 'TRIO', 'br_89': 'QUAD', 'br_dmz_85': 'DUO_PLUNDER'}
         self.Xsrf_token_URL = 'https://profile.callofduty.com/cod/login'

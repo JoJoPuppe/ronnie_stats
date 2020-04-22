@@ -8,78 +8,89 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
   </head>
-  <body class="flex items-baseline justify-center min-h-screen p-8 text-gray-800 bg-gray-200">
-    <div class="md:flex md:justify-center md:items-baseline md:flex-wrap">
+  <body x-data="{nav_open: true, player_select: { {% for player in stats %} '{{ player.Player }}': false, {% endfor %} 'none':'false' } }"
+        class="text-gray-800 bg-gray-200">
+    <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700">
+      <button class="p-2 focus:outline-none" @click="nav_open = !nav_open">
+        <svg x-show="!nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        <svg x-show="nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+      <p class="pr-5 text-2xl font-extrabold tracking-tight text-gray-100 uppercase">Warzone Stats</p>
+    </nav>
+    <div x-show="nav_open" class="flex flex-wrap items-center justify-start text-teal-800 bg-gray-300">
       {% for player in stats %}
-      <div class="w-64 m-2 overflow-hidden bg-gray-300 rounded-lg">
-        <div class="flex items-baseline justify-between bg-teal-300">
-          <div class="p-3 bg-teal-400">
-            <div class="flex items-baseline justify-center">
-              <svg class="w-4 h-4 text-teal-800 fill-current" version="1.1" id="Trophy" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                 viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
-              <g>
-                <path d="M11.18,14.356c0-1.451,1.1-2.254,2.894-3.442C16.268,9.458,19,7.649,19,3.354
-                  c0-0.387-0.317-0.699-0.709-0.699h-3.43C14.377,1.759,12.932,0.8,10,0.8c-2.934,0-4.377,0.959-4.862,1.855H1.707
-                  C1.316,2.655,1,2.968,1,3.354c0,4.295,2.73,6.104,4.926,7.559c1.794,1.188,2.894,1.991,2.894,3.442v1.311
-                  c-1.884,0.209-3.269,0.906-3.269,1.736c0,0.994,1.992,1.799,4.449,1.799s4.449-0.805,4.449-1.799c0-0.83-1.385-1.527-3.269-1.736
-                  C11.18,15.666,11.18,14.356,11.18,14.356z M13.957,9.3c0.566-1.199,1.016-2.826,1.088-5.246h2.51
-                  C17.315,6.755,15.693,8.118,13.957,9.3z M10,2.026c2.732-0.002,3.799,1.115,3.798,1.529c0,0.418-1.066,1.533-3.798,1.535
-                  C7.268,5.089,6.201,3.974,6.201,3.556C6.2,3.142,7.268,2.024,10,2.026z M2.445,4.054h2.509C5.027,6.474,5.475,8.101,6.043,9.3
-                  C4.307,8.118,2.684,6.755,2.445,4.054z"/>
-              </g>
-              </svg>
-              <span class="ml-1 text-xl font-extrabold">{{ player.Wins }}</span>
+      <div class="w-full py-1 md:w-auto hover:bg-teal-700 hover:text-gray-100" x-bind:class="{ 'text-gray-100 bg-teal-700':player_select.{{ player.Player }} }" >
+        <div class="flex items-center justify-between py-2 md:w-64" >
+          <button class="px-4 font-bold text-left focus:outline-none"
+                  @click="player_select.{{ player.Player }} = !player_select.{{ player.Player }}" x-model="player_select" >{{ player.Player }}
+          </button>
+          <a class="px-4" href="{{ url_for('matches',player=''+ player.Player) }}">
+            <div class="bg-gray-500 rounded-md hover:bg-gray-700">
+              <button class="px-2 text-xs font-bold text-gray-100">
+                Matches
+              </button>
             </div>
-          </div>
-          <p class="pr-3 text-2xl font-black">{{ player.Player }}</p>
-        </div>
-        <div class="px-6">
-          <div class="py-4 border-b border-gray-500">
-            <div class="flex items-center justify-between pb-2">
-              <p class="text-lg font-semibold tracking-tight">K/D:<span class="ml-2 text-xl font-black tracking-wide">{{ player.KD }}</span></p>
-              <p class="text-lg font-semibold tracking-tight">deaths:<span class="ml-2 text-xl font-black tracking-wide">{{ player.Deaths }}</span></p>
-            </div>
-            <div class="flex items-center justify-between">
-              <p class="text-lg font-semibold tracking-tight">kills:<span class="ml-2 text-xl font-black tracking-wide">{{ player.Kills }}</span></p>
-              <p class="text-lg font-semibold tracking-tight">downs:<span class="ml-2 text-xl font-black tracking-wide">{{ player.Downs }}</span></p>
-            </div>
-          </div>
-          <div class="flex items-center justify-around py-3 border-b border-gray-500">
-            <div class="text-center"><h4 class="text-sm uppercase">t25</h4><p class="text-lg font-bold">{{ player.TOP25 }}</p></div>
-            <div class="text-center"><h4 class="text-sm uppercase">t10</h4><p class="text-lg font-bold">{{ player.TOP10 }}</p></div>
-            <div class="text-center"><h4 class="text-sm uppercase">t5</h4><p class="text-lg font-bold">{{ player.TOP5 }}</p></div>
-          </div>
-          <div class="py-3">
-            <p class="text-sm font-bold tracking-wide text-gray-700 uppercase">playtime:<span class="ml-2 text-base font-normal lowercase">{{ player.Time }}</span></p>
-          </div>
-        </div>
-        <div class="px-6 bg-gray-400">
-          <div x-data="{ open: false }">
-            <button class="py-3 focus:outline-none" @click="open = !open">
-                <svg x-show="!open" class="w-5 h-5 text-teal-600 fill-current" version="1.1" id="Circled_plus" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                   y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
-                  <path d="M10,1.6c-4.639,0-8.4,3.761-8.4,8.4s3.761,8.4,8.4,8.4s8.4-3.761,8.4-8.4S14.639,1.6,10,1.6z M15,11h-4v4H9
-                  v-4H5V9h4V5h2v4h4V11z"/>
-                </svg>
-                <svg x-show="open" class="w-5 h-5 text-teal-600 fill-current" version="1.1" id="Circled_minus" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                   y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
-                  <path d="M10,1.6c-4.639,0-8.4,3.761-8.4,8.4s3.761,8.4,8.4,8.4s8.4-3.761,8.4-8.4S14.639,1.6,10,1.6z M15,11H5V9h10
-                  V11z"/>
-                </svg>
-            </button>
-            <div class="" x-show="open">
-              <div class="flex justify-between py-3 font-light border-t border-gray-500">
-                <p class="text-sm">score:<span class="ml-1 font-bold">{{ player.Score }}</span></p>
-                <p class="text-sm">score/min<span class="ml-1 font-bold">{{ player.ScoreMin }}</span></p>
-              </div>
-              <div class="flex justify-between pb-4 font-light">
-                <p class="text-sm">games:<span class="ml-1 font-bold">{{ player.Games }}</span></p>
-                <p class="text-sm">contracts<span class="ml-1 font-bold">{{ player.Contracts }}</span></p>
-              </div>
-            </div>
-          </div>
+          </a>
         </div>
       </div>
+      {% endfor %}
+    </div>
+    <div class="flex flex-wrap bg-gray-600 ">
+      {% for player in stats %}
+      <template x-if="player_select.{{ player.Player }}">
+
+        <div class="flex-1 bg-gray-300 border-r border-gray-400">
+          <div class="bg-teal-400 border-b-4 border-teal-700">
+            <p class="w-20 px-2 py-2 text-lg font-black text-center text-teal-800">{{ player.Player }}</p>
+          </div>
+          <div>
+            <p class="text-4xl font-black text-center text-teal-500">{{ player.Level }}</p>
+            <p class="-mt-2 text-sm font-semibold text-center text-gray-600">LEVEL</p>
+          </div>
+          <div class="">
+            <div class="py-2 ">
+              <p class="text-3xl font-black tracking-wide text-center">{{ player.KD }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">K/D</p>
+              <p class="text-3xl font-black tracking-wide text-center">{{ player.Kills }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Kills</p>
+              <p class="text-3xl font-black tracking-wide text-center">{{ player.Downs }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Downs</p>
+              <p class="text-3xl font-black tracking-wide text-center">{{ player.Deaths }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Deaths</p>
+            </div>
+            <div class="py-3 border-b border-gray-500">
+              <p class="text-2xl font-bold text-center">{{ player.TOP5 }}</p>
+              <h4 class="text-sm text-center uppercase">t5</h4>
+              <p class="text-2xl font-bold text-center">{{ player.TOP10 }}</p>
+              <h4 class="text-sm text-center uppercase">t10</h4>
+              <p class="text-2xl font-bold text-center">{{ player.TOP25 }}</p>
+              <h4 class="text-sm text-center uppercase">t25</h4>
+            </div>
+            <div class="py-3">
+              <p class="text-sm font-normal text-center lowercase">{{ player.Time }}</p>
+              <p class="text-sm font-bold tracking-wide text-center text-gray-700 uppercase">playtime</p>
+            </div>
+          </div>
+          <div class="px-6 bg-gray-400">
+            <div>
+              <div >
+                <div class="py-3 font-light text-center border-t border-gray-500">
+                  <p class="font-bold">{{ player.Score }}</p>
+                  <p class="pb-1 -mt-1 text-sm">score</p>
+                  <p class="font-bold">{{ player.ScoreMin }}</p>
+                  <p class="-mt-1 text-sm">score/min</p>
+                </div>
+                <div class="pb-4 font-light text-center">
+                  <p class="font-bold">{{ player.Games }}</p>
+                  <p class="pb-1 -mt-1 text-sm">games</p>
+                  <p class="font-bold">{{ player.Contracts }}</p>
+                  <p class="-mt-1 text-sm">contracts</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
       {% endfor %}
     </div>
   </body>
