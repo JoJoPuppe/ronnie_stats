@@ -1,6 +1,6 @@
 from app import app
 from app import db
-from app.models import MatchStats, MatchPlayerStats
+from app.models import MatchStats
 from app.get_warzone_stats import WarzoneStats
 import os
 import time
@@ -15,7 +15,6 @@ from stats_config import WARZONE_CONFIG
 LOG_FILE = WARZONE_CONFIG['LOGFILE']
 
 logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 
 NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli',
@@ -52,13 +51,7 @@ for name in NAMES:
                     playerCount = int(m["MatchStat"]['playerCount']),
                     teamCount = int(m["MatchStat"]['teamCount']),
                     playername = converted_playername,
-                    gameMode = m["MatchStat"]['gameMode']
-        )
-        db.session.add(record)
-
-        record_player = MatchPlayerStats(
-                    playername = converted_playername,
-                    matchID = str(m['MatchPlayerStats']['matchID']),
+                    gameMode = m["MatchStat"]['gameMode'],
                     kills = int(m['MatchPlayerStats']['kills']),
                     medalXp = int(m['MatchPlayerStats']['medalXp']),
                     matchXp = int(m['MatchPlayerStats']['matchXp']),
@@ -95,7 +88,7 @@ for name in NAMES:
                     damageDone = int(m['MatchPlayerStats']['damageDone']),
                     damageTaken = int(m['MatchPlayerStats']['damageTaken']))
 
-        db.session.add(record_player)
+        db.session.add(record)
 
     logging.info(f'matches of {name} done. wait 3s')
     time.sleep(3)

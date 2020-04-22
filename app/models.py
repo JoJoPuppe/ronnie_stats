@@ -70,15 +70,6 @@ class MatchStats(db.Model):
     duration = db.Column(db.Integer)
     playerCount = db.Column(db.Integer)
     teamCount = db.Column(db.Integer)
-
-    def __repr__(self):
-        return f'Match: {self.matchID}, timestamp: {self.timestamp.strftime("%m-%d-%H:%M")}'
-
-class MatchPlayerStats(db.Model) :
-    id = db.Column(db.Integer, primary_key=True)
-    matchID = db.Column(db.String(64))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    playername = db.Column(db.String(64))
     kills = db.Column(db.Integer)
     medalXp = db.Column(db.Integer)
     matchXp = db.Column(db.Integer)

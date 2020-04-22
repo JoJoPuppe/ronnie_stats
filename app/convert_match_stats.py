@@ -1,20 +1,16 @@
 from app import app
 from datetime import datetime, timezone
 from datetime import timedelta
-from sqlalchemy import func
-from app.models import MatchStats, MatchPlayerStats
+from sqlalchemy import func, desc
+from app.models import MatchStats
 
 class MatchConverter(object):
     def __init__(self, playername):
         self.playername = playername
 
-    def from_database_matchplayerstats(self, playername):
-        return MatchPlayerStats.query.filter(MatchPlayerStats.playername == playername).\
-                order_by(MatchPlayerStats.timestamp).limit(20).all()
-
     def from_database_matchstats(self, playername):
         return MatchStats.query.filter(MatchStats.playername == playername).\
-                order_by(MatchStats.timestamp).limit(20).all()
+                order_by(desc(MatchStats.utcStartSeconds)).limit(20).all()
 
     def strfdelta(self, sec, fmt):
         d = {}
@@ -45,45 +41,33 @@ class MatchConverter(object):
 
 
     def create_match_data(self):
-        q2 = self.from_database_matchstats(str(self.playername))
-        q = self.from_database_matchplayerstats(str(self.playername))
+        q = self.from_database_matchstats(str(self.playername))
 
         self.match_list = []
 
-        for m in range(0, len(q2)):
+        for m in range(0, len(q)):
             match_stats_dict = {}
-            match_stats = vars(q2[m])
+            match_stats = vars(q[m])
             if '_sa_instance_state' in match_stats:
                 del match_stats['_sa_instance_state']
 
-            match_stats_dict['matchDate'] = self.convert_epoch_time(match_stats['utcStartSeconds'])[0]
-            match_stats_dict['matchStart'] = self.convert_epoch_time(match_stats['utcStartSeconds'])[1]
-            match_stats_dict['matchEnd'] = self.convert_epoch_time(match_stats['utcEndSeconds'])[1]
 
+            match_stats['matchDate'] = self.convert_epoch_time(match_stats['utcStartSeconds'])[0]
+            match_stats['matchStart'] = self.convert_epoch_time(match_stats['utcStartSeconds'])[1]
+            match_stats['matchEnd'] = self.convert_epoch_time(match_stats['utcEndSeconds'])[1]
 
-            match_stats_dict['duration'] = self.strfdelta(match_stats['duration']//1000,'{minutes}m: {seconds}s')
-            match_stats_dict['playerCount'] = match_stats['playerCount']
-            match_stats_dict['teamCount'] = match_stats['teamCount']
-            match_stats_dict['gameMode'] = match_stats['gameMode']
+            match_stats['duration'] = self.strfdelta(match_stats['duration']//1000,'{minutes}m: {seconds}s')
 
+            match_stats['kdRatio'] = round(match_stats['kdRatio'], 2)
+            match_stats['scorePerMinute'] = round(match_stats['scorePerMinute'], 2)
+            seconds = match_stats['timePlayed']
+            match_stats['timePlayed'] = self.strfdelta(seconds, "{minutes}m: {seconds}s")
+            survival_sec = match_stats['teamSurvivalTime'] // 1000
+            match_stats['teamSurvivalTime'] = self.strfdelta(survival_sec, '{minutes}m: {seconds}s')
+            match_stats['percentTimeMoving'] = round(match_stats['percentTimeMoving'])
+            match_stats['distanceTraveled'] = self.convert_inches(match_stats['distanceTraveled'])
 
-            player_match_stats = vars(q[m])
-            if '_sa_instance_state' in player_match_stats:
-                del player_match_stats['_sa_instance_state']
-
-            for k, v in player_match_stats.items():
-                match_stats_dict[k] = v
-
-            match_stats_dict['kdRatio'] = round(match_stats_dict['kdRatio'], 2)
-            match_stats_dict['scorePerMinute'] = round(match_stats_dict['scorePerMinute'], 2)
-            seconds = match_stats_dict['timePlayed']
-            match_stats_dict['timePlayed'] = self.strfdelta(seconds, "{minutes}m: {seconds}s")
-            survival_sec = match_stats_dict['teamSurvivalTime'] // 1000
-            match_stats_dict['teamSurvivalTime'] = self.strfdelta(survival_sec, '{minutes}m: {seconds}s')
-            match_stats_dict['percentTimeMoving'] = round(match_stats_dict['percentTimeMoving'])
-            match_stats_dict['distanceTraveled'] = self.convert_inches(match_stats_dict['distanceTraveled'])
-
-            self.match_list.append(match_stats_dict)
+            self.match_list.append(match_stats)
 
         return self.match_list
 
