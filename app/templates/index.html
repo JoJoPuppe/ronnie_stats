@@ -9,89 +9,93 @@
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
   </head>
   <body x-data="{nav_open: true, player_select: { {% for player in stats %} '{{ player.Player }}': false, {% endfor %} 'none':'false' } }"
-        class="text-gray-800 bg-gray-200">
-    <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700">
-      <button class="p-2 focus:outline-none" @click="nav_open = !nav_open">
-        <svg x-show="!nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        <svg x-show="nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M6 18L18 6M6 6l12 12"></path></svg>
-      </button>
-      <p class="pr-5 text-2xl font-extrabold tracking-tight text-gray-100 uppercase">Warzone Stats</p>
-    </nav>
-    <div x-show="nav_open" class="flex flex-wrap items-center justify-start text-teal-800 bg-gray-300">
-      {% for player in stats %}
-      <div class="w-full py-1 md:w-auto hover:bg-teal-700 hover:text-gray-100" x-bind:class="{ 'text-gray-100 bg-teal-700':player_select.{{ player.Player }} }" >
-        <div class="flex items-center justify-between py-2 md:w-64" >
-          <button class="px-4 font-bold text-left focus:outline-none"
-                  @click="player_select.{{ player.Player }} = !player_select.{{ player.Player }}" x-model="player_select" >{{ player.Player }}
+        class="flex items-center justify-center text-gray-800 bg-gray-200 max-w-screen-md">
+    <div class="flex-1">
+      <div>
+        <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700 max-w-screen-md">
+          <button class="p-2 focus:outline-none" @click="nav_open = !nav_open">
+            <svg x-show="!nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <svg x-show="nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
-          <a class="px-4" href="{{ url_for('matches',player=''+ player.Player) }}">
-            <div class="bg-gray-500 rounded-md hover:bg-gray-700">
-              <button class="px-2 text-xs font-bold text-gray-100">
-                Matches
+          <p class="pr-5 text-2xl font-extrabold tracking-tight text-gray-100 uppercase">Warzone Stats</p>
+        </nav>
+        <div x-show="nav_open" class="flex flex-wrap items-center justify-start text-teal-800 bg-gray-300">
+          {% for player in stats %}
+          <div class="w-full py-1 md:w-auto hover:bg-teal-700 hover:text-gray-100" x-bind:class="{ 'text-gray-100 bg-teal-700':player_select.{{ player.Player }} }" >
+            <div class="flex items-center justify-between py-2 md:w-64" >
+              <button class="px-4 font-bold text-left focus:outline-none"
+                      @click="player_select.{{ player.Player }} = !player_select.{{ player.Player }}" x-model="player_select" >{{ player.Player }}
               </button>
+              <a class="px-4" href="{{ url_for('matches',player=''+ player.Player) }}">
+                <div class="bg-gray-500 rounded-md hover:bg-gray-700">
+                  <button class="px-2 text-xs font-bold text-gray-100">
+                    Matches
+                  </button>
+                </div>
+              </a>
             </div>
-          </a>
+          </div>
+          {% endfor %}
         </div>
       </div>
-      {% endfor %}
-    </div>
-    <div class="flex flex-wrap bg-gray-600 ">
-      {% for player in stats %}
-      <template x-if="player_select.{{ player.Player }}">
+      <div class="flex flex-wrap bg-gray-600 ">
+        {% for player in stats %}
+        <template x-if="player_select.{{ player.Player }}">
 
-        <div class="flex-1 bg-gray-300 border-r border-gray-400">
-          <div class="bg-teal-400 border-b-4 border-teal-700">
-            <p class="w-20 px-2 py-2 text-lg font-black text-center text-teal-800">{{ player.Player }}</p>
-          </div>
-          <div>
-            <p class="text-4xl font-black text-center text-teal-500">{{ player.Level }}</p>
-            <p class="-mt-2 text-sm font-semibold text-center text-gray-600">LEVEL</p>
-          </div>
-          <div class="">
-            <div class="py-2 ">
-              <p class="text-3xl font-black tracking-wide text-center">{{ player.KD }}</p>
-              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">K/D</p>
-              <p class="text-3xl font-black tracking-wide text-center">{{ player.Kills }}</p>
-              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Kills</p>
-              <p class="text-3xl font-black tracking-wide text-center">{{ player.Downs }}</p>
-              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Downs</p>
-              <p class="text-3xl font-black tracking-wide text-center">{{ player.Deaths }}</p>
-              <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Deaths</p>
+          <div class="flex-1 bg-gray-300 border-r border-gray-400">
+            <div class="bg-teal-400 border-b-4 border-teal-700">
+              <p class="w-20 px-2 py-2 text-lg font-black text-center text-teal-800">{{ player.Player }}</p>
             </div>
-            <div class="py-3 border-b border-gray-500">
-              <p class="text-2xl font-bold text-center">{{ player.TOP5 }}</p>
-              <h4 class="text-sm text-center uppercase">t5</h4>
-              <p class="text-2xl font-bold text-center">{{ player.TOP10 }}</p>
-              <h4 class="text-sm text-center uppercase">t10</h4>
-              <p class="text-2xl font-bold text-center">{{ player.TOP25 }}</p>
-              <h4 class="text-sm text-center uppercase">t25</h4>
-            </div>
-            <div class="py-3">
-              <p class="text-sm font-normal text-center lowercase">{{ player.Time }}</p>
-              <p class="text-sm font-bold tracking-wide text-center text-gray-700 uppercase">playtime</p>
-            </div>
-          </div>
-          <div class="px-6 bg-gray-400">
             <div>
-              <div >
-                <div class="py-3 font-light text-center border-t border-gray-500">
-                  <p class="font-bold">{{ player.Score }}</p>
-                  <p class="pb-1 -mt-1 text-sm">score</p>
-                  <p class="font-bold">{{ player.ScoreMin }}</p>
-                  <p class="-mt-1 text-sm">score/min</p>
-                </div>
-                <div class="pb-4 font-light text-center">
-                  <p class="font-bold">{{ player.Games }}</p>
-                  <p class="pb-1 -mt-1 text-sm">games</p>
-                  <p class="font-bold">{{ player.Contracts }}</p>
-                  <p class="-mt-1 text-sm">contracts</p>
+              <p class="text-4xl font-black text-center text-teal-500">{{ player.Level }}</p>
+              <p class="-mt-2 text-sm font-semibold text-center text-gray-600">LEVEL</p>
+            </div>
+            <div class="">
+              <div class="py-2 ">
+                <p class="text-3xl font-black tracking-wide text-center">{{ player.KD }}</p>
+                <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">K/D</p>
+                <p class="text-3xl font-black tracking-wide text-center">{{ player.Kills }}</p>
+                <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Kills</p>
+                <p class="text-3xl font-black tracking-wide text-center">{{ player.Downs }}</p>
+                <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Downs</p>
+                <p class="text-3xl font-black tracking-wide text-center">{{ player.Deaths }}</p>
+                <p class="-mt-2 text-sm font-semibold tracking-tight text-center text-gray-600">Deaths</p>
+              </div>
+              <div class="py-3 border-b border-gray-500">
+                <p class="text-2xl font-bold text-center">{{ player.TOP5 }}</p>
+                <h4 class="text-sm text-center uppercase">t5</h4>
+                <p class="text-2xl font-bold text-center">{{ player.TOP10 }}</p>
+                <h4 class="text-sm text-center uppercase">t10</h4>
+                <p class="text-2xl font-bold text-center">{{ player.TOP25 }}</p>
+                <h4 class="text-sm text-center uppercase">t25</h4>
+              </div>
+              <div class="py-3">
+                <p class="text-sm font-normal text-center lowercase">{{ player.Time }}</p>
+                <p class="text-sm font-bold tracking-wide text-center text-gray-700 uppercase">playtime</p>
+              </div>
+            </div>
+            <div class="px-6 bg-gray-400">
+              <div>
+                <div >
+                  <div class="py-3 font-light text-center border-t border-gray-500">
+                    <p class="font-bold">{{ player.Score }}</p>
+                    <p class="pb-1 -mt-1 text-sm">score</p>
+                    <p class="font-bold">{{ player.ScoreMin }}</p>
+                    <p class="-mt-1 text-sm">score/min</p>
+                  </div>
+                  <div class="pb-4 font-light text-center">
+                    <p class="font-bold">{{ player.Games }}</p>
+                    <p class="pb-1 -mt-1 text-sm">games</p>
+                    <p class="font-bold">{{ player.Contracts }}</p>
+                    <p class="-mt-1 text-sm">contracts</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </template>
-      {% endfor %}
+        </template>
+        {% endfor %}
+      </div>
     </div>
   </body>
 </html>

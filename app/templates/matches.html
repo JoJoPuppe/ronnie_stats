@@ -21,7 +21,7 @@
       <div class="flex flex-wrap items-baseline justify-center">
         {% for match in matches %}
         <div x-data="{ open_match: false }"  class="flex-1 min-w-full overflow-hidden border-b-2 border-teal-800 ">
-          <div @click="open_match = !open_match" class="flex items-center justify-between bg-gray-300 cursor-pointer hover:bg-gray-500">
+          <div @click="open_match = !open_match" class="flex items-center justify-between bg-gray-300 cursor-pointer hover:bg-teal-700 hover:text-gray-100">
             <div class="w-32 p-2 bg-teal-700">
               <p class="w-12 text-xs font-bold">{{ match.gameMode }}</p>
               <div class="flex items-baseline justify-end -mt-3 -mb-2 text-gray-100">
@@ -52,7 +52,7 @@
                   <p class="inline-block pr-2 text-xs font-bold text-gray-700">P:<span class="ml-1">{{ match.playerCount }}</span></p>
                   <p class="inline-block text-xs font-bold text-gray-700">T:<span class="ml-1">{{ match.teamCount }}</span></p>
                 </div>
-                <p class="ml-2 text-sm font-black text-right text-teal-700 ">{{ match.teamSurvivalTime }}</p>
+                <p class="ml-2 text-sm font-black text-right text-teal-900 ">{{ match.teamSurvivalTime }}</p>
               </div>
             </div>
           </div>
