@@ -3,8 +3,12 @@ import time
 import simplejson as ss
 import re
 import os
+import logging
 from stats_config import WARZONE_CONFIG
 
+LOG_FILE = WARZONE_CONFIG['LOGFILE']
+
+logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
 class WarzoneStats(object):
     def __init__(self, playername):
@@ -54,26 +58,22 @@ class WarzoneStats(object):
 
         r = s.post(self.Auth_URL, data=payload)
         r = s.get(self.Stats_URL)
-
+        logging.info(f'new cookies saved')
         self.save_cookies(s.cookies)
-        if 'rtkn' not in s.cookies:
-            print('authentification error')
-
 
 
     def request_player_data(self, cnt=5):
         cookies = self.load_all_cookies()
         if cnt != 0:
             if cookies:
-                cookies = {'rtkn': cookies['rtkn'], 'atkn': cookies['atkn'],
-                           'ACT_SSO_COOKIE': cookies['ACT_SSO_COOKIE']}
-
                 r = requests.get(self.Stats_URL, cookies=cookies)
                 response_string = r.content.decode("utf-8")
                 error = re.search(r'error', response_string)
                 if error == None:
                     return r.json()['data']
                 else:
+                    logging.error(f'{response_string}')
+                    print(error)
                     self.obtain_new_token()
                     cnt -= 1
                     self.request_player_data(cnt)
@@ -82,6 +82,7 @@ class WarzoneStats(object):
                 cnt -= 1
                 self.request_player_data(cnt)
 
+        logging.error(f'5 request attemps with no result')
         print("5 attempts. no succsess")
 
 
@@ -89,14 +90,14 @@ class WarzoneStats(object):
         cookies = self.load_all_cookies()
         if cnt != 0:
             if cookies:
-                cookies = {'rtkn': cookies['rtkn'], 'atkn': cookies['atkn'],
-                           'ACT_SSO_COOKIE': cookies['ACT_SSO_COOKIE']}
 
                 r = requests.get(self.Match_URL, cookies=cookies)
                 response = r.json()
                 if response['status'] != 'error':
                     return r.json()['data']['matches']
                 else:
+                    response_string = r.content.decode("utf-8")
+                    logging.error(f'{response_string}')
                     print(response['data'])
                     self.obtain_new_token()
                     cnt -= 1
@@ -106,6 +107,7 @@ class WarzoneStats(object):
                 cnt -= 1
                 self.request_match_data(cnt)
 
+        logging.error(f'5 request attemps with no result')
         print("5 attempts. no succsess")
 
 
