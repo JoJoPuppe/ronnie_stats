@@ -84,6 +84,7 @@ class WarzoneStats(object):
 
         logging.error(f'5 request attemps with no result')
         print("5 attempts. no succsess")
+        return None
 
 
     def request_match_data(self, cnt=5):
@@ -109,10 +110,13 @@ class WarzoneStats(object):
 
         logging.error(f'5 request attemps with no result')
         print("5 attempts. no succsess")
+        return None
 
 
     def collect_player_data(self):
         player_data = self.request_player_data()
+        if player_data == None:
+            return None
 
         collected_data = {}
 
@@ -133,7 +137,10 @@ class WarzoneStats(object):
 
 
     def collect_match_data(self):
-        match_data = self.request_match_data() #['data']['matches']
+        match_data = self.request_match_data()
+
+        if match_data == None:
+            return None
 
         validate_match_list = []
         for match_dict in match_data:
