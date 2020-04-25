@@ -16,24 +16,27 @@
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100 hover:text-gray-300"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           </button>
         </a>
-        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">Stats | {{ match[0].gameMode }}</p></div>
+        <div><p class="pr-4 text-2xl font-extrabold text-gray-100 uppercase">Stats | {{ match[0].gameMode }}</p></div>
       </nav>
-      <div class="flex items-center justify-between p-4 bg-teal-700">
+      <div class="flex flex-no-wrap items-center justify-between px-4 py-2 bg-teal-700">
         <div class="text-lg font-bold text-gray-100">
             <p class="">{{ match[0].matchDate }}</p>
             <p class="-mt-1">{{ match[0].matchStart }} - {{ match[0].matchEnd }}</p>
         </div>
-        <div class="-my-6 text-gray-100">
-          <p class="inline-block px-1 text-3xl italic font-black">#</p>
-          <p class="inline-block text-6xl font-black">{{ match[0].teamPlacement }}</p>
+        <div class="flex flex-no-wrap items-baseline justify-start -my-5 text-gray-100">
+          <p class="mx-1 text-3xl italic font-black">#</p>
+          <p class="text-6xl font-black">{{ match[0].teamPlacement }}</p>
         </div>
       </div>
-      <div class="flex items-center justify-between px-2 py-1 text-sm font-bold text-gray-200 bg-gray-700">
-        <div>
-          <p class="inline-block">Player:<span class="ml-1">{{ match[0].playerCount }}</span></p>
-          <p class="inline-block ml-2">Teams:<span class="ml-1">{{ match[0].teamCount }}</span></p>
+      <div class="flex items-center justify-between px-2 py-1 text-xs font-bold text-gray-200 bg-gray-700">
+        <div class="flex flex-no-wrap items-end justify-start">
+          <p >Player:<span class="ml-1">{{ match[0].playerCount }}</span></p>
+          <p class="ml-2">Teams:<span class="ml-1">{{ match[0].teamCount }}</span></p>
         </div>
-        <p>Game Length: <span class="ml-2">{{ match[0].duration }}</span></p>
+        <div class="flex flex-no-wrap items-end justify-start">
+          <p>Length:</p>
+          <p class="ml-2">{{ match[0].duration }}</p>
+        </div>
       </div>
       <div class="flex flex-wrap items-baseline justify-center">
         {% for player in match %}
