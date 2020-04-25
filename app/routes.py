@@ -3,7 +3,7 @@ from app import db
 from datetime import datetime
 from sqlalchemy import func
 from app.models import LifeTimeStats, WeeklyStats
-from flask import render_template, make_response, request
+from flask import render_template, request
 
 from app.convert_stats import DataConverter
 from app.convert_match_stats import MatchConverter
@@ -22,12 +22,17 @@ def index():
                                             wk_quad_stats=wk_quad_table, wk_solo_stats=wk_solo_table)
 @app.route('/matches/<player>')
 def matches(player):
-    match_query = MatchConverter(player)
-    matches = match_query.create_match_data()
+    match_query = MatchConverter()
+    matches = match_query.create_match_data(player)
 
-    res = make_response(render_template('matches.html', matches=matches))
-    res.set_cookie("name", value="I am cookies")
-    return res
-    #return render_template('matches.html', matches=matches)
+    return render_template('matches.html', matches=matches)
+
+@app.route('/squad_match/<match_id>')
+def squad_match(match_id):
+    match_query = MatchConverter()
+    match = match_query.create_squad_match_details(match_id)
+
+    return render_template('squad_match.html', match=match)
+
 
 

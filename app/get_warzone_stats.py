@@ -112,6 +112,14 @@ class WarzoneStats(object):
         print("5 attempts. no succsess")
         return None
 
+    def converted_playername(self, playername):
+        converted_playername = re.sub(r'^\[.*\]','', playername.lower())
+        if converted_playername == 'br3mmel':
+            converted_playername = 'br3mm3l'
+        if converted_playername == 'camarleng0':
+            converted_playername = 'camarlengo'
+
+        return converted_playername
 
     def collect_player_data(self):
         player_data = self.request_player_data()
@@ -165,12 +173,22 @@ class WarzoneStats(object):
                 print("Match data not complete")
                 continue
 
+            if 'teamPlacement' not in collected_data['MatchPlayerStats']:
+                #print(f'no placement found for {self.playername}. search alternative data')
+                for t in range(0, len(match_dict['rankedTeams'])):
+                    for player in match_dict['rankedTeams'][t]['players']:
+                        converted_playername = self.converted_playername(player['username'])
+                        if self.playername == converted_playername:
+                            #print(player['username'])
+                            #print(f"new placement found {t + 1}")
+                            collected_data['MatchPlayerStats']['teamPlacement'] = t + 1
+
+
             validated_data = self.validate_match_data(collected_data)
 
             validate_match_list.append(validated_data)
 
         return validate_match_list
-
 
     def validate_match_data(self, raw_data):
         MATCH_STATS = ['utcStartSecond', 'utcEndSeconds', 'matchID', 'duration', 'playerCount', 'teamCount', 'playername', 'gameMode']

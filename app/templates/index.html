@@ -22,10 +22,10 @@
         <div x-show="nav_open" class="flex flex-wrap items-center justify-start text-teal-800 bg-gray-300">
           {% for player in stats %}
           <div class="w-full py-1 md:w-auto hover:bg-teal-700 hover:text-gray-100" x-bind:class="{ 'text-gray-100 bg-teal-700':player_select.{{ player.Player }} }" >
-            <div class="flex items-center justify-between py-2 md:w-64" >
-              <button class="px-4 font-bold text-left focus:outline-none"
-                      @click="player_select.{{ player.Player }} = !player_select.{{ player.Player }}" x-model="player_select" >{{ player.Player }}
-              </button>
+            <div @click="player_select.{{ player.Player }} = !player_select.{{ player.Player }}" x-model="player_select" class="flex items-center justify-between py-2 cursor-pointer md:w-64" >
+              <p class="px-4 font-bold text-left"
+                      >{{ player.Player }}
+              </p>
               <a class="px-4" href="{{ url_for('matches',player=''+ player.Player) }}">
                 <div class="bg-gray-500 rounded-md hover:bg-gray-700">
                   <button class="px-2 text-xs font-bold text-gray-100">
