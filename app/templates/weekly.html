@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" >
     <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
   </head>
   <body class="flex items-center justify-center antialiased text-gray-800 bg-gray-200 max-w-screen-md">
     <div class="w-full">
@@ -20,33 +21,40 @@
       </nav>
       <div class="flex flex-wrap items-baseline justify-center">
         <div class="flex-1 min-w-full overflow-hidden border-b-2 border-teal-800 ">
-          <div class="flex items-center justify-between bg-gray-300 cursor-pointer hover:bg-teal-700 hover:text-gray-100">
-            <div class="w-32 p-2 bg-teal-700">
-              <div class="flex items-baseline justify-end -mt-3 -mb-2 text-gray-100">
-                <p class="px-1 italic font-black">#<span class="ml-1 text-3xl not-italic font-black">{{ data.week.timePlayed[1] }}</span></p>
+          <div class="flex items-center justify-between bg-gray-300">
+            <div class="w-full p-3 bg-teal-700">
+              <div class="flex items-baseline justify-end text-gray-100">
+                <p class="">{{ data.week_start[0] }} - {{ data.week_end[0] }}</p>
               </div>
             </div>
+          </div>
+          <div class="p-3">
+            <p>Matches: {{ data.week.game_count[1] }}</p>
           </div>
           <div class="px-4">
             <div class="px-2 py-2 border-b border-gray-500">
               <div class="flex items-center justify-between pb-2">
                 <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ data.week.kdRatio[1] }} {{ data.week.kdRatio[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ data.week.kdRatio[1] }} {{ data.week.kdRatio[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">K/D</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ data.week.kills[1] }} {{ data.week.kills[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ data.week.kills[1] }} {{ data.week.kills[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Kills</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ data.week.downs[1] }} {{ data.week.downs[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ data.week.downs[1] }} {{ data.week.downs[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Downs</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ data.week.deaths[1] }} {{ data.week.deaths[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ data.week.deaths[1] }} {{ data.week.deaths[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Deaths</p>
                 </div>
               </div>
+            </div>
+            <div>
+              <canvas id="test_chart"></canvas>
+
             </div>
             <div class="pb-3 border-b border-gray-500">
               <div class="text-center">
@@ -69,4 +77,46 @@
       </div>
     </div>
   </body>
+  <script>
+  var ctx = document.getElementById('test_chart').getContext('2d');
+  var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ['M', 'D', 'M', 'D', 'F', 'S', 'S'],
+        datasets: [{
+            label: 'My First dataset',
+            lineTension: 0,
+            fill: false,
+            borderWidth: 3,
+            borderColor: 'rgb(255, 99, 132)',
+          data: {{ data.days.kdRatio }}
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+      legend: {
+        display: false
+      },
+      scales: {
+        gridLines: [{
+          display: false
+        }],
+        ticks: [{
+          display: false
+        }],
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+            maxTicksLimit: 5
+          }
+        }]
+      }
+    }
+}); 
+  </script>
 </html>
+
