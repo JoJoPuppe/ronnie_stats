@@ -34,10 +34,17 @@ def squad_match(match_id):
 
     return render_template('squad_match.html', match=match)
 
-@app.route('/weekly/<player>')
-def player_profile(player):
-    profil_query = MatchConverter()
-    week_data = profil_query.consolidate_interval_stats(player, 1)
+@app.route('/weekly')
+def player_profile():
 
-    return render_template('weekly.html', data=week_data)
+    players = request.args.getlist('players')
+
+    profil_query = MatchConverter()
+    data = []
+    for player in players:
+        data.append(profil_query.consolidate_interval_stats(player, 1))
+
+    print(data[0]['week']['kdRatio'])
+
+    return render_template('weekly.html', data=data)
 

@@ -17,67 +17,89 @@
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100 hover:text-gray-300"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           </button>
         </a>
-        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">{{ data.playername }}</p></div>
+        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">{{ data[0].playername }}</p></div>
       </nav>
       <div class="flex flex-wrap items-baseline justify-center">
         <div class="flex-1 min-w-full overflow-hidden border-b-2 border-teal-800 ">
           <div class="flex items-center justify-between bg-gray-300">
             <div class="w-full p-3 bg-teal-700">
               <div class="flex items-baseline justify-end text-gray-100">
-                <p class="">{{ data.week_start[0] }} - {{ data.week_end[0] }}</p>
+                <p class="">{{ data[0].week_start[0] }} - {{ data[0].week_end[0] }}</p>
               </div>
             </div>
           </div>
           <div class="p-3">
-            <p>Matches: {{ data.week.game_count[1] }}</p>
+            <p>Matches: {{ data[0].week.game_count[1] }}</p>
           </div>
+          <canvas id="h_bar"></canvas>
           <div class="px-4">
+            {% for player in data %}
             <div class="px-2 py-2 border-b border-gray-500">
               <div class="flex items-center justify-between pb-2">
                 <div class="text-center">
-                  <p class="text-xl font-black tracking-wide">{{ data.week.kdRatio[1] }} {{ data.week.kdRatio[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ player.week.kdRatio[1] }} {{ player.week.kdRatio[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">K/D</p>
+
                 </div>
                 <div class="text-center">
-                  <p class="text-xl font-black tracking-wide">{{ data.week.kills[1] }} {{ data.week.kills[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ player.week.kills[1] }} {{ player.week.kills[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Kills</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-xl font-black tracking-wide">{{ data.week.downs[1] }} {{ data.week.downs[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ player.week.downs[1] }} {{ player.week.downs[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Downs</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-xl font-black tracking-wide">{{ data.week.deaths[1] }} {{ data.week.deaths[0] }}</p>
+                  <p class="text-xl font-black tracking-wide">{{ player.week.deaths[1] }} {{ player.week.deaths[0] }}</p>
                   <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Deaths</p>
                 </div>
               </div>
             </div>
+            {% endfor %}
             <div>
               <canvas id="test_chart"></canvas>
-
+<!--
             </div>
             <div class="pb-3 border-b border-gray-500">
               <div class="text-center">
-                <p class="text-5xl font-black text-teal-600">{{ data.week.score[1] }}</p><p class="-mt-3 text-lg font-bold ">Score</p>
-                <p class="text-3xl font-black text-teal-600">{{ data.week.score_hour[1] }}</p><p class="-mt-2 font-bold text-gray-700 ">Score/Min</p>
+                <p class="text-5xl font-black text-teal-600">{{ data[0].week.score[1] }}</p><p class="-mt-3 text-lg font-bold ">Score</p>
+                <p class="text-3xl font-black text-teal-600">{{ data[0].week.score_hour[1] }}</p><p class="-mt-2 font-bold text-gray-700 ">Score/Min</p>
               </div>
             </div>
             <div class="py-3 border-b border-gray-500">
               <div class="flex items-baseline justify-between">
                 <p class="font-semibold text-gray-700">Damage Done</p>
-                <p class="text-3xl font-black text-blue-600">{{ data.week.damageDone[1] }}</p>
+                <p class="text-3xl font-black text-blue-600">{{ data[0].week.damageDone[1] }}</p>
               </div>
               <div class="flex items-baseline justify-between">
                 <p class="font-semibold text-gray-700">Damage Taken</p>
-                <p class="text-3xl font-black text-red-600">{{ data.week.damageTaken[1] }}</p>
+                <p class="text-3xl font-black text-red-600">{{ data[0].week.damageTaken[1] }}</p>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
     </div>
   </body>
   <script>
+
+
+  var ctx_hb = document.getElementById('h_bar').getContext('2d');
+  var myBarChart = new Chart(ctx_hb, {
+    type: 'horizontalBar',
+    data: {
+      labels: ['c', 'l'],
+      dataset: [{
+        backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+      borderColor: 'rgb(255, 99, 132)',
+        data: [10, 4]
+      }]
+    },
+    options: {}
+  });
+
+
+
   var ctx = document.getElementById('test_chart').getContext('2d');
   var chart = new Chart(ctx, {
     // The type of chart we want to create
@@ -92,7 +114,7 @@
             fill: false,
             borderWidth: 3,
             borderColor: 'rgb(255, 99, 132)',
-          data: {{ data.days.kdRatio }}
+          data: {{ data[0].days.kdRatio }}
         }]
     },
 
@@ -102,11 +124,11 @@
         display: false
       },
       scales: {
-        gridLines: [{
-          display: false
-        }],
-        ticks: [{
-          display: false
+        xAxes: [{
+          gridLines: {
+            display: false
+          }
+
         }],
         yAxes: [{
           ticks: {
