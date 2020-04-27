@@ -14,12 +14,12 @@ def index():
     data = DataConverter()
     life_time_table = data.create_LT_table()
     #print(life_time_table[0]['Time'])
-    wk_trio_table = data.create_WK_table('TRIO')
-    wk_quad_table = data.create_WK_table('QUAD')
-    wk_solo_table = data.create_WK_table('SOLO')
+    #wk_trio_table = data.create_WK_table('TRIO')
+    #wk_quad_table = data.create_WK_table('QUAD')
+    #wk_solo_table = data.create_WK_table('SOLO')
 
-    return render_template('index.html', stats=life_time_table, wk_trio_stats=wk_trio_table,
-                                            wk_quad_stats=wk_quad_table, wk_solo_stats=wk_solo_table)
+    return render_template('index.html', stats=life_time_table)
+
 @app.route('/matches/<player>')
 def matches(player):
     match_query = MatchConverter()
@@ -34,5 +34,10 @@ def squad_match(match_id):
 
     return render_template('squad_match.html', match=match)
 
+@app.route('/weekly/<player>')
+def player_profile(player):
+    profil_query = MatchConverter()
+    week_data = profil_query.consolidate_interval_stats(player, 1)
 
+    return render_template('weekly.html', data=week_data)
 

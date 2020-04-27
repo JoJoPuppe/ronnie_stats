@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
+  </head>
+  <body class="flex items-center justify-center antialiased text-gray-800 bg-gray-200 max-w-screen-md">
+    <div class="w-full">
+      <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700">
+        <a href="{{ url_for('index') }}">
+          <button class="p-2 focus:outline-none">
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100 hover:text-gray-300"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          </button>
+        </a>
+        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">{{ data.playername }}</p></div>
+      </nav>
+      <div class="flex flex-wrap items-baseline justify-center">
+        <div class="flex-1 min-w-full overflow-hidden border-b-2 border-teal-800 ">
+          <div class="flex items-center justify-between bg-gray-300 cursor-pointer hover:bg-teal-700 hover:text-gray-100">
+            <div class="w-32 p-2 bg-teal-700">
+              <div class="flex items-baseline justify-end -mt-3 -mb-2 text-gray-100">
+                <p class="px-1 italic font-black">#<span class="ml-1 text-3xl not-italic font-black">{{ data.week.timePlayed[1] }}</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="px-4">
+            <div class="px-2 py-2 border-b border-gray-500">
+              <div class="flex items-center justify-between pb-2">
+                <div class="text-center">
+                  <p class="text-4xl font-black tracking-wide">{{ data.week.kdRatio[1] }} {{ data.week.kdRatio[0] }}</p>
+                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">K/D</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-4xl font-black tracking-wide">{{ data.week.kills[1] }} {{ data.week.kills[0] }}</p>
+                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Kills</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-4xl font-black tracking-wide">{{ data.week.downs[1] }} {{ data.week.downs[0] }}</p>
+                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Downs</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-4xl font-black tracking-wide">{{ data.week.deaths[1] }} {{ data.week.deaths[0] }}</p>
+                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Deaths</p>
+                </div>
+              </div>
+            </div>
+            <div class="pb-3 border-b border-gray-500">
+              <div class="text-center">
+                <p class="text-5xl font-black text-teal-600">{{ data.week.score[1] }}</p><p class="-mt-3 text-lg font-bold ">Score</p>
+                <p class="text-3xl font-black text-teal-600">{{ data.week.score_hour[1] }}</p><p class="-mt-2 font-bold text-gray-700 ">Score/Min</p>
+              </div>
+            </div>
+            <div class="py-3 border-b border-gray-500">
+              <div class="flex items-baseline justify-between">
+                <p class="font-semibold text-gray-700">Damage Done</p>
+                <p class="text-3xl font-black text-blue-600">{{ data.week.damageDone[1] }}</p>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <p class="font-semibold text-gray-700">Damage Taken</p>
+                <p class="text-3xl font-black text-red-600">{{ data.week.damageTaken[1] }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
