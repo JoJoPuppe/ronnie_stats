@@ -7,11 +7,7 @@ import logging
 
 from stats_config import WARZONE_CONFIG
 
-#NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli']
-
-NAMES = ['jojopuppe', 'dlt_orko', 'neuner_eisen', 'topperinski', 'superboergerli',
-         'kiishonsuu', 'br3mm3l', 'bratlos', 'camarlengo', 'knabenbube', 'schwabilton']
-
+NAMES = WARZONE_CONFIG['NAMES']
 LOG_FILE = WARZONE_CONFIG['LOGFILE']
 
 logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
