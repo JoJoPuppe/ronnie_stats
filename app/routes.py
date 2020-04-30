@@ -38,7 +38,7 @@ def squad_match(match_id):
     return render_template('squad_match.html', match=match)
 
 @app.route('/weekly')
-def player_profile():
+def player_profil():
 
     NAMES = WARZONE_CONFIG['NAMES']
     INTERVAL_NAMES = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches']
@@ -46,18 +46,32 @@ def player_profile():
     interval = request.args.get('interval')
     mi = request.args.get('mi')
 
-    if mi == None:
+    try:
+        x = int(mi)
+    except:
+        mi = 0
+
+    if mi == None or int(mi) < 0:
         mi = 0
 
     if int(mi) < 0:
         mi = 0
 
-    if interval == None:
+    if interval not in INTERVAL_NAMES:
         interval = 'Week'
+
+    checked_players = []
+    for player in players:
+        if not isinstance(player, str) or player not in NAMES:
+            checked_players.append('jojopuppe')
+        else:
+            checked_players.append(player)
+
+    checked_players = list(dict.fromkeys(checked_players))
 
     profil_query = IntervalConverter()
     data = []
-    for player in players:
+    for player in checked_players:
         data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
 
     reorder_props = PropFirst()

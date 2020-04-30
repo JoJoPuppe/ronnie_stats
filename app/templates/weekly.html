@@ -55,7 +55,7 @@
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100 hover:text-gray-300"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           </button>
         </a>
-        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">{{ interval }} Stats</p></div>
+        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">{{ interval }}</p></div>
       </nav>
       <div class="flex flex-wrap items-baseline justify-center">
         <div class="flex-1 min-w-full overflow-hidden border-b-2 border-teal-800 ">
@@ -76,7 +76,7 @@
             </button>
             </a>
           </div>
-          <div class="flex items-center justify-end w-full px-3 py-2 text-sm font-semibold text-gray-100 bg-teal-800 cursor-pointer hover:bg-gray-700" @click="open=!open">
+          <div class="flex items-center justify-end w-full px-3 py-2 text-sm font-semibold text-gray-100 bg-teal-800 cursor-pointer hover:bg-teal-900" @click="open=!open">
             <p class="">Filter</p>
             <div class="pl-2">
               <svg x-show="open" class="w-4 h-4 fill-current" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -150,22 +150,17 @@
               </div>
             </div>
             {% for player in prop %}
-            {% if player.inter[0] is string or player.inter|length < 2 %}
-            {% set percent_diff = 0 %}
-            {% else %}
-            {% set percent_diff = (100 - (100 / player.inter[0] * player.inter[1]))|int %}
-            {% endif %}
-            <div class="flex items-baseline justify-between py-2 border-b border-gray-500">
+            <div class="flex items-baseline justify-between w-full py-2 border-b border-gray-500">
               <div class="flex justify-start">
                 <div class="w-1 h-full" style="background-color:{{ player.colors }};">&nbsp;</div>
                 <p class="pl-2 font-semibold uppercase">{{ player.playername }}</p>
               </div>
-              <div class="flex items-baseline {% if interval == 'Week' or interval == 'Month' %} justify-between {% else %} justify-end {% endif %} w-40 pr-2">
+              <div class="flex items-baseline {% if interval == 'Week' or interval == 'Month' %} justify-between {% else %} justify-end {% endif %} w-40 bg-gray-300">
                 <div class="flex items-center justify-start">
-                  <p class="text-2xl font-bold uppercase">{{ player.inter[0] }}</p>
+                  <p class="px-2 {% if prop[0].display_prop_name == 'Distance' %} text-base {% else %} text-2xl {% endif %} font-bold">{{ player.inter[0] }}</p>
                   {% if interval == 'Week' or interval == 'Month' %}
                   <div class="pl-1">
-                    {% if percent_diff >= 0 %}
+                    {% if player.inter[2] >= 0 %}
                     <svg class="w-3 h-3 text-green-500 fill-current" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                       <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 00.753-1.659l-4.796-5.48a1 1 0 00-1.506 0z"/>
                     </svg>
@@ -175,11 +170,11 @@
                     </svg>
                     {% endif %}
                   </div>
-                  <p class="text-xs font-semibold uppercase {% if percent_diff >= 0 %} text-green-500 {% else %} text-red-500 {% endif %}">{{ percent_diff|abs }}%</p>
+                  <p class="text-xs font-semibold uppercase {% if player.inter[2] >= 0 %} text-green-500 {% else %} text-red-500 {% endif %}">{{ player.inter[2]|abs }}%</p>
                   {% endif %}
                 </div>
                 {% if interval == 'Week' or interval == 'Month' %}
-                <p class="pl-4 text-lg font-semibold text-gray-500 uppercase">{{ player.inter[1] }}</p>
+                <p class="pr-2 {% if prop[0].display_prop_name == 'Distance' %} text-sm {% else %} text-lg {% endif %} font-semibold text-gray-500">{{ player.inter[1] }}</p>
                 {% endif %}
               </div>
             </div>

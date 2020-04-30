@@ -49,6 +49,7 @@ class IntervalConverter(object):
 
         return int(break_time.timestamp())
 
+
     def get_seconds_of_interval(self, interval, multi):
         if interval == self.int_string[0]:
             return self.week_interval
@@ -57,6 +58,7 @@ class IntervalConverter(object):
         if interval == self.int_string[1]:
             ref_time = datetime.now()
             return calendar.monthrange(ref_time.year, ref_time.month - multi)[1] * self.day_interval
+
 
     def interval_timings(self, interval, multi):
         time_now = int(time.time())
@@ -99,6 +101,22 @@ class IntervalConverter(object):
 
         return stats_dict
 
+    def add_percent_diff(self, sum_list):
+        invert_percent_stats = ['teamPlacement_noSum', 'deaths', 'damageTaken']
+        if len(sum_list) < 2:
+            return sum_list
+
+        percent_diff = {}
+        for k, v in sum_list[0].items():
+            if sum_list[0][k] == 0 or sum_list[1][k] == 0:
+                percent_diff[k] = 0
+            else:
+                percent_diff[k] = round(100 - (100 / sum_list[0][k] * sum_list[1][k]))
+            if k in invert_percent_stats:
+                percent_diff[k] *= -1
+
+        return percent_diff
+
     def get_time_stats(self, playername, interval, interval_diff):
 
         interval_seconds = self.get_seconds_of_interval(interval, interval_diff)
@@ -117,6 +135,8 @@ class IntervalConverter(object):
             interval_average = self.average_sum_data(interval_sum)
             interval_sum_list.append(interval_average)
 
+        percent_diff_dict = self.add_percent_diff(interval_sum_list)
+
         if interval == self.int_string[0]:
             tick_list = self.get_interval_list(interval_list[0], interval_timings[1], self.day_interval, 7)
         if interval == self.int_string[1]:
@@ -130,6 +150,9 @@ class IntervalConverter(object):
         for tick in tick_list:
             ticks.append(self.average_sum_data(self.sum_stats(tick)))
 
+        interval_sum_list.append(percent_diff_dict)
+        #print(interval_sum_list)
+
         interval_sum_list = self.rows_to_columns(interval_sum_list)
         ticks = self.aggregate_stats(ticks)
         ticks = self.rows_to_columns(ticks)
@@ -141,6 +164,7 @@ class IntervalConverter(object):
         time_interval_stats_dict['playername'] = playername
 
         return time_interval_stats_dict
+
 
     def get_match_count_stats(self, playername, interval):
         count_interval_stats_dict = {}
@@ -171,7 +195,6 @@ class IntervalConverter(object):
 
 
     def consolidate_interval_stats(self, playername, interval, interval_diff):
-
         if interval in [self.int_string[0], self.int_string[1], self.int_string[2]]:
             return self.get_time_stats(playername, interval, interval_diff)
         else:
@@ -216,9 +239,6 @@ class IntervalConverter(object):
             sum_stats['circle6'] +\
             sum_stats['circle7']
 
-        #if sum_stats['downs'] == 0:
-        #    sum_stats['downs'] = float('NaN')
-
         for stat in per_hour_stats:
             if math.isnan(sum_stats[stat]):
                 continue
@@ -229,12 +249,19 @@ class IntervalConverter(object):
         sum_stats['kdRatio_noSum'] = round(sum_stats['kills'] / sum_stats['deaths'], 1) if sum_stats['deaths'] != 0 else 0
         sum_stats['percentTimeMoving_game'] = round(sum_stats['percentTimeMoving'] / gamecount)
 
-        sum_stats['distanceTraveled_hour'] = utilities.convert_inches(round(sum_stats['distanceTraveled'] / hours))
-        sum_stats['distanceTraveled'] = utilities.convert_inches(sum_stats['distanceTraveled'])
-
-        sum_stats['timePlayed'] = utilities.strfdelta(sum_stats['timePlayed'], "{hours}h: {minutes}m")
-
         return sum_stats
+
+    def format_data(self, stats):
+
+        stats['damageDone'] = utilities.convert_scores(stats['damageDone'])
+        stats['damageTaken'] = utilities.convert_scores(stats['damageTaken'])
+
+        stats['distanceTraveled_hour'] = utilities.convert_inches(round(stats['distanceTraveled_hour']))
+        stats['distanceTraveled'] = utilities.convert_inches(stats['distanceTraveled'])
+
+        stats['timePlayed'] = utilities.strfdelta(stats['timePlayed'], "{hours}h: {minutes}m")
+
+        return stats
 
 
     def get_zero_stats(self, match_list):
