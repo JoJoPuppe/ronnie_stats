@@ -7,6 +7,7 @@ from flask import render_template, request
 
 from app.convert_stats import DataConverter
 from app.convert_match_stats import MatchConverter
+from app.convert_interval_stats import IntervalConverter
 from app.PropFirst import PropFirst
 from stats_config import WARZONE_CONFIG
 
@@ -54,7 +55,7 @@ def player_profile():
     if interval == None:
         interval = 'Week'
 
-    profil_query = MatchConverter()
+    profil_query = IntervalConverter()
     data = []
     for player in players:
         data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
