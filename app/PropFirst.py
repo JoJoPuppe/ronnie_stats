@@ -14,18 +14,26 @@ class PropFirst(object):
                              'percentTimeMoving_game': '%Moving/Game', 'revives': 'Revives', 'shopping': 'Shopped', 'boxesOpen': 'Cache Open',
                              'headshots': 'Headshots', 'pickupTablet': 'Contracts', 'distanceTraveled': 'Distance', 'timePlayed': 'Playtime'}
 
-        #self.colors = ['#ef476f','#ffd166','#06d6a0','#118ab2','#073b4c']
         self.colors = ["#052f5f","#c81d25","#06a77d","#0d1821","#e2c044","#ff6618","#087e8b","#ed5156","#8d6a9f","#79b473"]
-        self.reverse_sort = ['teamPlacement_noSum', 'deaths', 'damageTaken']
+        self.reverse_sort = ['teamPlacement_noSum', 'deaths', 'damageTaken', 'deaths_hour', 'damageTaken_hour']
 
         self.format_stats = {'big_num': [5,6,7], 'distance': [15], 'time':[16]}
 
+        #PERFORMANCE
+        self.perf_prime_stats = ['kills_hour', 'downs_hour', 'deaths_hour', 'score_hour', 'damageDone_hour', 'damageTaken_hour']
+        self.perf_side_stats = ['revives_hour', 'shopping_hour', 'boxesOpen_hour', 'headshots_hour', 'pickupTablet_hour', 'distanceTraveled_hour']
+
+        self.perf_display_name = {'kills_hour': 'Kills/h', 'downs_hour': 'Downs/h', 'deaths_hour': 'Deaths/h', 'score_hour': 'Score/h', 'damageDone_hour': 'Damage Done/h',
+                                  'damageTaken_hour': 'Damage Taken/h', 'revives_hour': 'Revives/h', 'shopping_hour': 'Shopped/h', 'boxesOpen_hour': 'Cache Open/h',
+                                  'headshots_hour': 'Headshots/h', 'pickupTablet_hour': 'Contracts/h', 'distanceTraveled_hour': 'Distance/h'}
+        self.perf_format_stats = {'big_num': [3,4,5], 'distance': [11], 'time': [] }
 
 
-    def reorganize(self, player_list):
+
+    def reorganize(self, player_list, prime_stats, side_stats, display_name, formats):
         prop_list = []
-        prime_stats = [(stat, True) for stat in self.prime_stats]
-        side_stats = [(stat, False) for stat in self.side_stats]
+        prime_stats = [(stat, True) for stat in prime_stats]
+        side_stats = [(stat, False) for stat in side_stats]
 
         stats = prime_stats + side_stats
 
@@ -33,7 +41,7 @@ class PropFirst(object):
             player_index = []
             for p in range(0, len( player_list )):
                 player_props = {}
-                player_props['display_prop_name'] = self.display_name[prop[0]]
+                player_props['display_prop_name'] = display_name[prop[0]]
                 player_props['prop_name'] = prop[0]
                 player_props['chart_true'] = prop[1]
                 player_props['inter_start'] = player_list[p]['inter_start']
@@ -49,7 +57,7 @@ class PropFirst(object):
 
         prop_list = self.sort_properties(prop_list)
 
-        prop_list = self.format_data(prop_list)
+        prop_list = self.format_data(prop_list, formats)
 
         return prop_list
 
@@ -84,8 +92,8 @@ class PropFirst(object):
 
         return sorted_prop
 
-    def format_data(self, prop_list):
-        for i in self.format_stats['big_num']:
+    def format_data(self, prop_list, formats):
+        for i in formats['big_num']:
             for player in range(0, len(prop_list[i])):
                 prop_len = len(prop_list[i][player]['inter'])
                 if prop_len > 2:
@@ -93,7 +101,7 @@ class PropFirst(object):
                 for p in range(0, prop_len):
                     prop_list[i][player]['inter'][p] = utilities.convert_scores(prop_list[i][player]['inter'][p])
 
-        for i in self.format_stats['time']:
+        for i in formats['time']:
             for player in range(0, len(prop_list[i])):
                 prop_len = len(prop_list[i][player]['inter'])
                 if prop_len > 2:
@@ -101,7 +109,7 @@ class PropFirst(object):
                 for p in range(0, prop_len):
                     prop_list[i][player]['inter'][p] = utilities.strfdelta(prop_list[i][player]['inter'][p], "{hours}:{minutes}")
 
-        for i in self.format_stats['distance']:
+        for i in formats['distance']:
             for player in range(0, len(prop_list[i])):
                 prop_len = len(prop_list[i][player]['inter'])
                 if prop_len > 2:

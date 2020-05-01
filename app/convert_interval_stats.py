@@ -135,6 +135,7 @@ class IntervalConverter(object):
             interval_average = self.average_sum_data(interval_sum)
             interval_sum_list.append(interval_average)
 
+
         percent_diff_dict = self.add_percent_diff(interval_sum_list)
 
         if interval == self.int_string[0]:
@@ -151,7 +152,9 @@ class IntervalConverter(object):
             ticks.append(self.average_sum_data(self.sum_stats(tick)))
 
         interval_sum_list.append(percent_diff_dict)
-        #print(interval_sum_list)
+
+        print(len(interval_sum_list))
+
 
         interval_sum_list = self.rows_to_columns(interval_sum_list)
         ticks = self.aggregate_stats(ticks)
@@ -250,19 +253,6 @@ class IntervalConverter(object):
         sum_stats['percentTimeMoving_game'] = round(sum_stats['percentTimeMoving'] / gamecount)
 
         return sum_stats
-
-    def format_data(self, stats):
-
-        stats['damageDone'] = utilities.convert_scores(stats['damageDone'])
-        stats['damageTaken'] = utilities.convert_scores(stats['damageTaken'])
-
-        stats['distanceTraveled_hour'] = utilities.convert_inches(round(stats['distanceTraveled_hour']))
-        stats['distanceTraveled'] = utilities.convert_inches(stats['distanceTraveled'])
-
-        stats['timePlayed'] = utilities.strfdelta(stats['timePlayed'], "{hours}h: {minutes}m")
-
-        return stats
-
 
     def get_zero_stats(self, match_list):
         if len(match_list) < 1:

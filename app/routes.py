@@ -74,8 +74,9 @@ def player_profil():
     for player in checked_players:
         data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
 
-    reorder_props = PropFirst()
-    data = reorder_props.reorganize(data)
+    reorder = PropFirst()
+    real_data = reorder.reorganize(data, reorder.prime_stats, reorder.side_stats, reorder.display_name, reorder.format_stats)
+    perf_data = reorder.reorganize(data, reorder.perf_prime_stats, reorder.perf_side_stats, reorder.perf_display_name, reorder.perf_format_stats)
 
-    return render_template('weekly.html', data=data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
+    return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
 
