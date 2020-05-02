@@ -9,7 +9,9 @@ from app.convert_stats import DataConverter
 from app.convert_match_stats import MatchConverter
 from app.convert_interval_stats import IntervalConverter
 from app.PropFirst import PropFirst
+from app.bestof import Score
 from stats_config import WARZONE_CONFIG
+from copy import deepcopy
 
 @app.route('/')
 @app.route('/index')
@@ -41,7 +43,7 @@ def squad_match(match_id):
 def player_profil():
 
     NAMES = WARZONE_CONFIG['NAMES']
-    INTERVAL_NAMES = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches']
+    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches',]
     players = request.args.getlist('players')
     interval = request.args.get('interval')
     mi = request.args.get('mi')
@@ -75,8 +77,34 @@ def player_profil():
         data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
 
     reorder = PropFirst()
-    real_data = reorder.reorganize(data, reorder.prime_stats, reorder.side_stats, reorder.display_name, reorder.format_stats)
-    perf_data = reorder.reorganize(data, reorder.perf_prime_stats, reorder.perf_side_stats, reorder.perf_display_name, reorder.perf_format_stats)
+    real_data = reorder.reorganize(data, reorder.real_data)
+    perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
 
     return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
+
+@app.route('/skill')
+def skill():
+    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches']
+    interval = request.args.get('interval')
+    mi = request.args.get('mi')
+
+    try:
+        x = int(mi)
+    except:
+        mi = 0
+
+    if mi == None or int(mi) < 0:
+        mi = 0
+
+    if int(mi) < 0:
+        mi = 0
+
+    if interval not in INTERVAL_NAMES:
+        interval = 'Week'
+
+    sk= Score()
+    skill = sk.calc(interval, mi)
+    times = sk.time
+
+    return render_template('skill.html', skill=skill, times=times)
 

@@ -13,11 +13,20 @@
     <div class="flex-1">
       <div>
         <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700 max-w-screen-md">
-          <button class="p-2 focus:outline-none" @click="nav_open = !nav_open">
-            <svg x-show="!nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            <svg x-show="nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
-          <p class="pr-5 text-2xl font-extrabold tracking-tight text-gray-100 uppercase">Warzone Stats</p>
+          <div class="flex items-center justify-between">
+            <button class="p-2 focus:outline-none" @click="nav_open = !nav_open">
+              <svg x-show="!nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg x-show="nav_open" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <p class="pr-5 text-2xl font-extrabold tracking-tight text-gray-100 uppercase">Warzone Stats</p>
+          </div>
+            <a class="px-2 py-2" href="{{ url_for('skill', interval='Week', mi=0) }}">
+              <div class="bg-teal-800 rounded-sm hover:bg-teal-500">
+                <button class="px-2 py-1 font-bold text-gray-100 text">
+                  Skill Stats
+                </button>
+              </div>
+            </a>
         </nav>
         <div x-show="nav_open" class="flex flex-wrap items-center justify-start text-teal-800 bg-gray-300">
           {% for player in stats %}

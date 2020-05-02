@@ -192,7 +192,11 @@
               {% endif %}
               <script>
                 var {{ prop[0].prop_name }}_data = {
+                  {% if interval != 'Day' %}
                   labels: [{% for tick in range(prop[0].ticks|length) %} 'day-{{tick + 1}}', {% endfor %}],
+                  {% else %}
+                  labels: [{% for tick in range(prop[0].ticks|length) %} 'match-{{tick + 1}}', {% endfor %}],
+                  {% endif %}
                   datasets:
                   [
                     {% for player in prop %}
@@ -268,12 +272,16 @@
               {% endif %}
               <script>
                 var {{ prop[0].prop_name }}_data = {
+                  {% if interval != 'Day' %}
                   labels: [{% for tick in range(prop[0].ticks|length) %} 'day-{{tick + 1}}', {% endfor %}],
+                  {% else %}
+                  labels: [{% for tick in range(prop[0].ticks|length) %} 'match-{{tick + 1}}', {% endfor %}],
+                  {% endif %}
                   datasets:
                   [
                     {% for player in prop %}
                     {
-                      lineTension: 0, fill: false, borderWidth: 2, pointRadius: 2, spanGaps: true, borderColor: '{{ player['colors'] }}',
+                      lineTension: 0, fill: false, borderWidth: 2, pointRadius: 2, pointHitRadius: 3, spanGaps: true, borderColor: '{{ player['colors'] }}',
                       data: {{ player.ticks }}
                     },
                     {% endfor %}

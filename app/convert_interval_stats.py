@@ -16,7 +16,7 @@ class IntervalConverter(object):
         self.day_interval = 86400
         self.week_interval = 604800
         self.year_interval = 31536000
-        self.int_string = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches']
+        self.int_string = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Day']
 
     def get_interval_break(self, timestamp, interval):
         DAY_BREAK = 6
@@ -31,6 +31,8 @@ class IntervalConverter(object):
                 return daily_diff.weekday()
             if interval == self.int_string[1]:
                 return daily_diff.day - 1
+            if interval == self.int_string[6]:
+                return 0
             else:
                 return daily_diff.weekday()
 
@@ -51,13 +53,19 @@ class IntervalConverter(object):
 
 
     def get_seconds_of_interval(self, interval, multi):
+        if interval == self.int_string[6]:
+            return self.day_interval;
         if interval == self.int_string[0]:
             return self.week_interval
         if interval == self.int_string[2]:
             return self.year_interval
         if interval == self.int_string[1]:
             ref_time = datetime.now()
-            return calendar.monthrange(ref_time.year, ref_time.month - multi)[1] * self.day_interval
+            new_month = (ref_time.month - multi) % 13
+            if new_month < 1:
+                new_month = 12 - new_month
+
+            return calendar.monthrange(ref_time.year, new_month)[1] * self.day_interval
 
 
     def interval_timings(self, interval, multi):
@@ -66,11 +74,18 @@ class IntervalConverter(object):
 
         if interval == self.int_string[1]:
             start_time = datetime.now()
+            new_month = (start_time.month - multi - 1) % 13
+            if new_month < 1:
+                new_month = 12 - new_month
             month_span_seconds = 0
             for i in range(0, multi):
-                month_span_seconds += calendar.monthrange(start_time.year, start_time.month - i)[1] * self.day_interval
+                for_month = (start_time.month - i) % 13
+                if for_month < 1:
+                    for_month = 12 - for_month
 
-            last_month_seconds = calendar.monthrange(start_time.year, start_time.month - multi - 1)[1] * self.day_interval
+                month_span_seconds += calendar.monthrange(start_time.year, for_month)[1] * self.day_interval
+
+            last_month_seconds = calendar.monthrange(start_time.year, new_month)[1] * self.day_interval
 
             multi_diff = time_now - month_span_seconds
             last_interval_start = multi_diff - last_month_seconds
@@ -86,20 +101,6 @@ class IntervalConverter(object):
 
         return [last_interval_start_ts, current_interval_start_ts, current_interval_end_ts]
 
-
-    def rows_to_columns(self, game_data):
-        if game_data[0] == None:
-            return game_data
-
-        stats_dict = {}
-        for k, v in game_data[0].items():
-            property_list = []
-            for player in game_data:
-                property_list.append(player[k])
-
-            stats_dict[k] = property_list
-
-        return stats_dict
 
     def add_percent_diff(self, sum_list):
         invert_percent_stats = ['teamPlacement_noSum', 'deaths', 'damageTaken']
@@ -140,6 +141,8 @@ class IntervalConverter(object):
 
         if interval == self.int_string[0]:
             tick_list = self.get_interval_list(interval_list[0], interval_timings[1], self.day_interval, 7)
+        if interval == self.int_string[6]:
+            tick_list = self.get_interval_list(interval_list[0], interval_timings[1], self.day_interval, 1)
         if interval == self.int_string[1]:
             ref_time = datetime.fromtimestamp(interval_timings[1])
             days_of_month = calendar.monthrange(ref_time.year, ref_time.month)[1]
@@ -147,18 +150,20 @@ class IntervalConverter(object):
         if interval == self.int_string[2]:
             tick_list = self.get_interval_list(interval_list[0], interval_timings[1], self.week_interval, 52)
 
-        ticks = []
-        for tick in tick_list:
-            ticks.append(self.average_sum_data(self.sum_stats(tick)))
+        if interval == self.int_string[6]:
+            ticks = []
+            for tick in tick_list[0]:
+                ticks.append(self.average_sum_data(self.sum_stats([tick])))
+        else:
+            ticks = []
+            for tick in tick_list:
+                ticks.append(self.average_sum_data(self.sum_stats(tick)))
 
         interval_sum_list.append(percent_diff_dict)
 
-        print(len(interval_sum_list))
+        print(ticks)
 
-
-        interval_sum_list = self.rows_to_columns(interval_sum_list)
         ticks = self.aggregate_stats(ticks)
-        ticks = self.rows_to_columns(ticks)
 
         time_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(interval_timings[1])
         time_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(interval_timings[2])
@@ -180,17 +185,17 @@ class IntervalConverter(object):
 
         interval_sum_list = self.average_sum_data(self.sum_stats(match_list))
 
-        interval_sum_list = self.rows_to_columns([interval_sum_list])
+        #interval_sum_list = self.rows_to_columns([interval_sum_list])
 
         ticks = []
         for tick in match_list:
             ticks.append(self.average_sum_data(tick))
 
-        ticks = self.rows_to_columns(ticks)
+        #ticks = self.rows_to_columns(ticks)
 
         count_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(match_list[0]['utcStartSeconds'])
         count_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(match_list[-1]['utcStartSeconds'])
-        count_interval_stats_dict['inter'] = interval_sum_list
+        count_interval_stats_dict['inter'] = [interval_sum_list]
         count_interval_stats_dict['ticks'] = ticks
         count_interval_stats_dict['playername'] = playername
 
@@ -198,7 +203,7 @@ class IntervalConverter(object):
 
 
     def consolidate_interval_stats(self, playername, interval, interval_diff):
-        if interval in [self.int_string[0], self.int_string[1], self.int_string[2]]:
+        if interval in [self.int_string[0], self.int_string[1], self.int_string[2], self.int_string[6]]:
             return self.get_time_stats(playername, interval, interval_diff)
         else:
             return self.get_match_count_stats(playername, interval)
@@ -246,10 +251,10 @@ class IntervalConverter(object):
             if math.isnan(sum_stats[stat]):
                 continue
             stat_hour = stat + "_hour"
-            sum_stats[stat_hour] = round(sum_stats[stat] / hours, 1)
+            sum_stats[stat_hour] = round(sum_stats[stat] / hours, 2)
 
-        sum_stats['teamPlacement_noSum'] = round(sum_stats['teamPlacement'] / gamecount, 1)
-        sum_stats['kdRatio_noSum'] = round(sum_stats['kills'] / sum_stats['deaths'], 1) if sum_stats['deaths'] != 0 else 0
+        sum_stats['teamPlacement_noSum'] = round(sum_stats['teamPlacement'] / gamecount, 2)
+        sum_stats['kdRatio_noSum'] = round(sum_stats['kills'] / sum_stats['deaths'], 2) if sum_stats['deaths'] != 0 else 0
         sum_stats['percentTimeMoving_game'] = round(sum_stats['percentTimeMoving'] / gamecount)
 
         return sum_stats

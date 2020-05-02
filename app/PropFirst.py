@@ -5,43 +5,65 @@ utilities = Utilities()
 
 class PropFirst(object):
     def __init__(self):
-        self.prime_stats = ['teamPlacement_noSum', 'kdRatio_noSum', 'kills', 'downs', 'deaths', 'score', 'damageDone', 'damageTaken']
-        self.side_stats = ['game_count', 'percentTimeMoving_game', 'revives', 'shopping', 'boxesOpen', 'headshots', 'pickupTablet', 'distanceTraveled', 'timePlayed']
-        self.all_stats = self.prime_stats + self.side_stats
+        self.real_data = {}
+        self.real_data['prime_stats'] = ['teamPlacement_noSum', 'kdRatio_noSum', 'kills', 'downs', 'deaths', 'score', 'damageDone', 'damageTaken']
+        self.real_data['side_stats'] = ['game_count', 'percentTimeMoving_game', 'revives', 'shopping', 'boxesOpen', 'headshots', 'pickupTablet', 'distanceTraveled', 'timePlayed']
 
-        self.display_name = {'teamPlacement_noSum': 'Placement', 'kdRatio_noSum': 'KD', 'kills': 'Kills', 'downs': 'Downs', 'deaths': 'Deaths',
+        self.real_data['display_name'] = {'teamPlacement_noSum': 'Placement', 'kdRatio_noSum': 'KD', 'kills': 'Kills', 'downs': 'Downs', 'deaths': 'Deaths',
                              'score': 'Score', 'damageDone': 'Damage Done', 'damageTaken': 'Damage Taken', 'game_count': 'Games',
                              'percentTimeMoving_game': '%Moving/Game', 'revives': 'Revives', 'shopping': 'Shopped', 'boxesOpen': 'Cache Open',
                              'headshots': 'Headshots', 'pickupTablet': 'Contracts', 'distanceTraveled': 'Distance', 'timePlayed': 'Playtime'}
 
+        self.real_data['format_stats'] = {'big_num': [5,6,7], 'distance': [15], 'time':[16]}
+
+
+        #PERFORMANCE
+        self.perf_data = {}
+        self.perf_data['prime_stats'] = ['kills_hour', 'downs_hour', 'deaths_hour', 'score_hour', 'damageDone_hour', 'damageTaken_hour']
+        self.perf_data['side_stats'] = ['revives_hour', 'shopping_hour', 'boxesOpen_hour', 'headshots_hour', 'pickupTablet_hour', 'distanceTraveled_hour']
+
+        self.perf_data['display_name'] = {'kills_hour': 'Kills/h', 'downs_hour': 'Downs/h', 'deaths_hour': 'Deaths/h', 'score_hour': 'Score/h', 'damageDone_hour': 'Damage Done/h',
+                                          'damageTaken_hour': 'Damage Taken/h', 'revives_hour': 'Revives/h', 'shopping_hour': 'Shopped/h', 'boxesOpen_hour': 'Cache Open/h',
+                                          'headshots_hour': 'Headshots/h', 'pickupTablet_hour': 'Contracts/h', 'distanceTraveled_hour': 'Distance/h'}
+        self.perf_data['format_stats'] = {'big_num': [3,4,5], 'distance': [11], 'time': [] }
+
+
         self.colors = ["#052f5f","#c81d25","#06a77d","#0d1821","#e2c044","#ff6618","#087e8b","#ed5156","#8d6a9f","#79b473"]
         self.reverse_sort = ['teamPlacement_noSum', 'deaths', 'damageTaken', 'deaths_hour', 'damageTaken_hour']
 
-        self.format_stats = {'big_num': [5,6,7], 'distance': [15], 'time':[16]}
 
-        #PERFORMANCE
-        self.perf_prime_stats = ['kills_hour', 'downs_hour', 'deaths_hour', 'score_hour', 'damageDone_hour', 'damageTaken_hour']
-        self.perf_side_stats = ['revives_hour', 'shopping_hour', 'boxesOpen_hour', 'headshots_hour', 'pickupTablet_hour', 'distanceTraveled_hour']
+    def rows_to_columns(self, game_data):
+        if game_data[0] == None:
+            return game_data
 
-        self.perf_display_name = {'kills_hour': 'Kills/h', 'downs_hour': 'Downs/h', 'deaths_hour': 'Deaths/h', 'score_hour': 'Score/h', 'damageDone_hour': 'Damage Done/h',
-                                  'damageTaken_hour': 'Damage Taken/h', 'revives_hour': 'Revives/h', 'shopping_hour': 'Shopped/h', 'boxesOpen_hour': 'Cache Open/h',
-                                  'headshots_hour': 'Headshots/h', 'pickupTablet_hour': 'Contracts/h', 'distanceTraveled_hour': 'Distance/h'}
-        self.perf_format_stats = {'big_num': [3,4,5], 'distance': [11], 'time': [] }
+        stats_dict = {}
+        for k, v in game_data[0].items():
+            property_list = []
+            for player in game_data:
+                property_list.append(player[k])
+
+            stats_dict[k] = property_list
+
+        return stats_dict
 
 
-
-    def reorganize(self, player_list, prime_stats, side_stats, display_name, formats):
+    def reorganize(self, player_list, data, format=True, invert=True):
         prop_list = []
-        prime_stats = [(stat, True) for stat in prime_stats]
-        side_stats = [(stat, False) for stat in side_stats]
+        prime_stats = [(stat, True) for stat in data['prime_stats']]
+        side_stats = [(stat, False) for stat in data['side_stats']]
 
         stats = prime_stats + side_stats
+
+        if invert:
+            for p in player_list:
+                p['inter'] = self.rows_to_columns(p['inter'])
+                p['ticks'] = self.rows_to_columns(p['ticks'])
 
         for prop in stats:
             player_index = []
             for p in range(0, len( player_list )):
                 player_props = {}
-                player_props['display_prop_name'] = display_name[prop[0]]
+                player_props['display_prop_name'] = data['display_name'][prop[0]]
                 player_props['prop_name'] = prop[0]
                 player_props['chart_true'] = prop[1]
                 player_props['inter_start'] = player_list[p]['inter_start']
@@ -57,7 +79,8 @@ class PropFirst(object):
 
         prop_list = self.sort_properties(prop_list)
 
-        prop_list = self.format_data(prop_list, formats)
+        if format:
+            prop_list = self.format_data(prop_list, data['format_stats'])
 
         return prop_list
 

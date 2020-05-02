@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
+    <script>
+      var line_options= {
+        layout: {
+          padding: {
+            left: 0,
+            right: 10,
+            top: 0,
+            bottom: 0
+          }
+        },
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              display: false
+            }
+          }],
+          yAxes: [{
+            gridLines: {
+              drawBorder: false
+            },
+            ticks: {
+              beginAtZero: true,
+              maxTicksLimit: 5
+            }
+          }]
+        }
+      };
+    </script>
+  </head>
+  <body x-data="{open: false}" class="flex items-center justify-center text-gray-800 bg-gray-200 max-w-screen-md">
+    <div class="w-full">
+      <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700">
+        <a href="{{ url_for('index') }}">
+          <button class="p-2 focus:outline-none">
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100 hover:text-gray-300"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          </button>
+        </a>
+        <div><p class="pr-5 text-2xl font-extrabold text-gray-100 uppercase">{{ request.args.get('interval') }} Skill</p></div>
+      </nav>
+      <div class="flex justify-between w-full p-3 text-sm font-semibold text-gray-100 bg-teal-700">
+        <a href="{{url_for('skill', interval=request.args.get('interval'), mi=(request.args.get('mi')|int + 1))}}">
+          <button class="p-1 bg-teal-900 rounded">
+            <svg class="w-5 h-5 text-gray-100 fill-current" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11.354 1.646a.5.5 0 010 .708L5.707 8l5.647 5.646a.5.5 0 01-.708.708l-6-6a.5.5 0 010-.708l6-6a.5.5 0 01.708 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </a>
+        <p class="">{{ times.inter_start[0][4:] }} - {{ times.inter_end[0][4:] }}</p>
+        <a href="{{url_for('skill', interval=request.args.get('interval'), mi=(request.args.get('mi')|int - 1))}}">
+        <button class="p-1 ml-2 bg-teal-900 rounded">
+          <svg class="w-5 h-5 text-gray-100 fill-current" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.646 1.646a.5.5 0 01.708 0l6 6a.5.5 0 010 .708l-6 6a.5.5 0 01-.708-.708L10.293 8 4.646 2.354a.5.5 0 010-.708z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        </a>
+      </div>
+      <div class="flex items-center justify-end w-full px-3 py-2 text-sm font-semibold text-gray-100 bg-teal-800 cursor-pointer hover:bg-teal-900" @click="open=!open">
+        <p class="">Filter</p>
+        <div class="pl-2">
+          <svg x-show="open" class="w-4 h-4 fill-current" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z" clip-rule="evenodd"/>
+          </svg>
+          <svg x-show="!open" class="w-4 h-4 fill-current" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.354 1.646a.5.5 0 010 .708L5.707 8l5.647 5.646a.5.5 0 01-.708.708l-6-6a.5.5 0 010-.708l6-6a.5.5 0 01.708 0z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+      <div x-show="open" class="px-2">
+        <form action="skill" method="get">
+          <div class="text-sm font-bold text-gray-700 border-b border-gray-400" >
+            <p class="p-1">Time Interval</p>
+          </div>
+          <div class="flex flex-wrap items-center justify-start pb-2">
+            {% set interval_names = ["Day", "Week", "Month"] %}
+            {% for inter in interval_names %}
+            <div class="flex-grow w-32 px-1 hover:bg-gray-400">
+              <div class="flex items-center justify-start py-1">
+                <input class="" type="radio" id="{{ inter }}" name="interval" value="{{ inter }}">
+                <label for="{{ inter }}" class="px-2 text-sm font-semibold text-left cursor-pointer">{{ inter }}</label>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="flex-grow w-32 px-1">&nbsp;</div>
+          </div>
+          <div class="flex justify-center p-2 pb-6 md:justify-start">
+            <button class="px-2 py-1 font-semibold text-gray-100 uppercase bg-teal-700 rounded hover:bg-teal-400" type="submit">Send
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="flex items-center justify-between bg-gray-400">
+        <div class="px-2 bg-gray-800">
+          <p class="text-sm font-semibold text-gray-200">#</p>
+        </div>
+        <div class="flex items-center justify-between w-32">
+          <div class="px-2 border-l-2 border-gray-500">
+            <p class="text-xs font-semibold text-gray-600">Skill Points</p>
+          </div>
+        </div>
+      </div>
+      {% for p in range(0, skill|length)  %}
+      <div x-data='{ details: false, all_stuff:false }' class="w-full p-2">
+        <div class="flex items-center justify-between w-full pb-2 border-b border-gray-500">
+          <div class="flex items-center justify-start">
+            <p class="pr-2 text-2xl font-black text-gray-600">{{ p + 1 }}</p>
+            <p class="text-lg font-extrabold tracking-tight uppercase">{{ skill[p].playername }}</p>
+          </div>
+          <div class="flex items-center justify-between pr-2">
+            <p class="pl-2 text-2xl font-black text-teal-600 uppercase">{{ skill[p].scores.interval_score[12][1][0] }} sp</p>
+            <div @click="all_stuff=!all_stuff" class="pl-2 text-gray-100 cursor-pointer">
+              <svg x-show="all_stuff" class="w-5 h-5 p-1 bg-teal-600 fill-current" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z" clip-rule="evenodd"/>
+              </svg>
+              <svg x-show="!all_stuff" class="w-5 h-5 p-1 bg-teal-600 fill-current" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.354 1.646a.5.5 0 010 .708L5.707 8l5.647 5.646a.5.5 0 01-.708.708l-6-6a.5.5 0 010-.708l6-6a.5.5 0 01.708 0z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-start py-1">
+          {% for badge in skill[p].scores.badges %}
+          <div x-data="{modal : false}" class="pb-1 pr-1">
+            <p @click="modal=!modal" class="relative px-2 text-xs font-bold text-gray-100 uppercase bg-teal-500 rounded">{{ badge[0] }}</p>
+            <div x-show="modal" :class="{ 'absolute z-10 flex items-center justify-center': modal }">
+              <div x-show="modal" @click.away="modal=false" class="w-4/5 px-6 py-4 bg-white rounded shadow-lg md:max-w-md">
+                <div>{{ badge[1] }}</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div>
+          <div class="w-full">
+            <div x-show="all_stuff == true" class="border-b border-gray-500">
+              <div class="h-32 px-1 py-2 -ml-1 md:h-64">
+                <canvas id="{{ skill[p].playername }}_chart"></canvas>
+              </div>
+              <div class="flex justify-center pb-4">
+                <button @click="details=!details" class="px-2 py-1 mx-1 text-xs font-semibold text-gray-100 uppercase bg-teal-600 rounded cursor-pointer hover:bg-teal-900 focus:outline-none">Details</button>
+              </div>
+              <div x-show="details == true" class="">
+                {% for score in skill[p].scores.interval_score %}
+                <div class="flex justify-between border-t border-gray-400">
+                  <p class="text-sm text-gray-700">{{ score[1][1] }}</p>
+                  <p class="font-semibold text-teal-600">{{ score[1][0]|int }} SP</p>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <script>
+            var {{ skill[p].playername }}_data = {
+              {% if request.args.get('interval') != 'Day' %}
+              labels: [{% for tick in range(skill[p].scores.tick_score|length) %} 'day-{{tick + 1}}', {% endfor %}],
+              {% else %}
+              labels: [{% for tick in range(skill[p].scores.tick_score|length) %} 'match-{{tick + 1}}', {% endfor %}],
+              {% endif %}
+              datasets:
+              [
+                {
+                  lineTension: 0, fill: false, borderWidth: 2, pointRadius: 2, pointHitRadius: 3, spanGaps: true, borderColor: '#052f5f',
+                  data: [{% for tick in skill[p].scores.tick_score %}{{ tick[12][1][0] }},{% endfor %} ]
+                }
+              ]
+            };
+            var ctx = document.getElementById('{{ skill[p].playername}}_chart').getContext('2d');
+            var chart = new Chart(ctx, {
+              type: 'line',
+              data: {{ skill[p].playername }}_data,
+              options: line_options
+            });
+          </script>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>
