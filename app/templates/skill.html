@@ -138,10 +138,10 @@
         <div class="flex flex-wrap items-center justify-start py-1">
           {% for badge in skill[p].scores.badges %}
           <div x-data="{modal : false}" class="pb-1 pr-1">
-            <p @click="modal=!modal" class="relative px-2 text-xs font-bold text-gray-100 uppercase bg-teal-500 rounded">{{ badge[0] }}</p>
+            <p @click="modal=!modal" class="relative px-2 text-xs font-bold text-gray-100 uppercase whitespace-no-wrap bg-teal-500 rounded">{{ badge[0] }}</p>
             <div x-show="modal" :class="{ 'absolute z-10 flex items-center justify-center': modal }">
               <div x-show="modal" @click.away="modal=false" class="w-4/5 px-6 py-4 bg-white rounded shadow-lg md:max-w-md">
-                <div>{{ badge[1] }}</div>
+                <div class="">{{ badge[1] }}</div>
               </div>
             </div>
           </div>
