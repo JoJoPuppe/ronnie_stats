@@ -17,6 +17,7 @@ class IntervalConverter(object):
         self.week_interval = 604800
         self.year_interval = 31536000
         self.int_string = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Day']
+        self.zero_stat = self.get_zero_stats()
 
     def get_interval_break(self, timestamp, interval):
         DAY_BREAK = 6
@@ -127,8 +128,10 @@ class IntervalConverter(object):
         interval_timings = self.interval_timings(interval, interval_diff)
         q = query.from_database_time_stats(playername, interval_timings[0], interval_timings[2])
 
+
         interval_list = self.get_interval_list(q, interval_timings[0], interval_seconds, 2)
         interval_list = interval_list[::-1]
+
 
         interval_sum_list = []
         for i in interval_list:
@@ -259,11 +262,8 @@ class IntervalConverter(object):
 
         return sum_stats
 
-    def get_zero_stats(self, match_list):
-        if len(match_list) < 1:
-            first_match = query.from_database_first_match()
-        else:
-            first_match = match_list[0]
+    def get_zero_stats(self):
+        first_match = query.from_database_first_match()
 
         if not isinstance(first_match, dict):
             first_match = vars(first_match)
@@ -301,7 +301,7 @@ class IntervalConverter(object):
             keep_interval = []
             check_next = []
             has_value = False
-            zero_base_stats = self.get_zero_stats(match_list)
+            zero_base_stats = self.zero_stat
 
             if zero_base_stats == None:
                 return None
