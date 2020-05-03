@@ -50,6 +50,23 @@ class ScoreCalc(object):
         #shopping
         #headshots
 
+        if inter[0]['teamPlacement_noSum'] < 10:
+            badge = ['YOU ARE WARZONE', 'Have an average placement of less than 10']
+        if inter[0]['teamPlacement_noSum'] < 15:
+            badge = ['Warzone Expert', 'Have an average placement of less than 15']
+        elif inter[0]['teamPlacement_noSum'] < 20:
+            badge = ['Warzone Specialist',  'Have an average placement of less than 20']
+        elif inter[0]['teamPlacement_noSum'] < 25:
+            badge = ['know the Warzone',  'Have an average placement of less than 25']
+        elif inter[0]['teamPlacement_noSum'] < 30:
+            badge = ['Everday Man',  'Have an average placement of less than 30']
+        elif inter[0]['teamPlacement_noSum'] < 35:
+            badge = ['Trainee',  'Have an average placement of less than 35']
+        elif inter[0]['teamPlacement_noSum'] < 40:
+            badge = ['Nothing special',  'Have an average placement of less than 40']
+        if badge != 0:
+            badges.append(badge)
+            badge = 0
 
         if inter[0]['kills'] > 100:
             badge = ['Terminator', 'Kill more than 100 other players']
@@ -57,6 +74,8 @@ class ScoreCalc(object):
             badge = ['Monster', 'Kill more than 50 other players']
         elif inter[0]['kills'] > 25:
             badge = ['Killer', 'Kill more than 25 other players']
+        elif inter[0]['kills'] > 15:
+            badge = ['You Shoot People', 'Kill more than 15 other players']
         if badge != 0:
             badges.append(badge)
             badge = 0
@@ -84,11 +103,15 @@ class ScoreCalc(object):
         if inter[0]['kdRatio_noSum'] > 2.0:
             badge = ['Destroyer', 'KD of more than 2.0']
         elif inter[0]['kdRatio_noSum'] > 1.5:
-            badge = ['Better than others', 'KD of more than 1.5']
+            badge = ['Pad is your Mouse', 'KD of more than 1.5']
+        elif inter[0]['kdRatio_noSum'] > 1.25:
+            badge = ['Better than others', 'KD of more than 1.25']
         elif inter[0]['kdRatio_noSum'] > 1.0:
             badge = ['Even', 'KD of more than 1.0']
-        elif inter[0]['kdRatio_noSum'] > 0.8:
-            badge = ['Nerfgun', 'KD of more than 0.8']
+        elif inter[0]['kdRatio_noSum'] > 0.75:
+            badge = ['Can Aim', 'KD of more than 0.75']
+        elif inter[0]['kdRatio_noSum'] > 0.5:
+            badge = ['Nerfgun', 'KD of more than 0.5']
         if badge != 0:
             badges.append(badge)
             badge = 0

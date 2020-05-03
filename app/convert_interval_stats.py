@@ -161,14 +161,13 @@ class IntervalConverter(object):
 
         interval_sum_list.append(percent_diff_dict)
 
-        print(ticks)
-
         ticks = self.aggregate_stats(ticks)
 
         time_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(interval_timings[1])
         time_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(interval_timings[2])
         time_interval_stats_dict['inter'] = interval_sum_list
         time_interval_stats_dict['ticks'] = ticks
+        time_interval_stats_dict['ticks_length'] = len(ticks)
         time_interval_stats_dict['playername'] = playername
 
         return time_interval_stats_dict
@@ -197,6 +196,7 @@ class IntervalConverter(object):
         count_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(match_list[-1]['utcStartSeconds'])
         count_interval_stats_dict['inter'] = [interval_sum_list]
         count_interval_stats_dict['ticks'] = ticks
+        count_interval_stats_dict['ticks_length'] = len(ticks)
         count_interval_stats_dict['playername'] = playername
 
         return count_interval_stats_dict

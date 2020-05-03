@@ -71,6 +71,7 @@ class PropFirst(object):
                 player_props['playername'] = player_list[p]['playername']
                 player_props['inter'] = player_list[p]['inter'][prop[0]]
                 player_props['ticks'] = player_list[p]['ticks'][prop[0]]
+                player_props['ticks_length'] = self.max_ticks(player_list)
                 player_props['colors'] = self.colors[p]
 
                 player_index.append(player_props)
@@ -83,6 +84,10 @@ class PropFirst(object):
             prop_list = self.format_data(prop_list, data['format_stats'])
 
         return prop_list
+
+    def max_ticks(self, player_list):
+        max_tick_length = max([tick_length['ticks_length'] for tick_length in player_list])
+        return max_tick_length
 
     def sort_properties(self, prop_list):
         for prop in prop_list:
