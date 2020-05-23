@@ -15,7 +15,7 @@ class WarzoneStats(object):
         self.email = WARZONE_CONFIG['EMAIL']
         self.pw = WARZONE_CONFIG['PW']
         self.playername = playername
-        self.GAMEMODES = {'br_87': 'SOLO', 'br_25': 'TRIO', 'br_89': 'QUAD', 'br_dmz_85': 'DUO_PLUNDER', 'br_dmz_38': 'TRIO_PLUNDER'}
+        self.GAMEMODES = {'br_87': 'SOLO', 'br_25': 'TRIO', 'br_89': 'QUAD', 'br_dmz_85': 'DUO_PLUNDER', 'br_dmz_38': 'TRIO_PLUNDER', 'br_74': 'CLASSIC TR'}
         self.Xsrf_token_URL = 'https://profile.callofduty.com/cod/login'
         self.Auth_URL = 'https://profile.callofduty.com/do_login?new_SiteId=cod'
         self.Stats_URL = 'https://my.callofduty.com/api/papi-client/stats/cod/v1/title/mw/platform/psn/gamer/' +self.playername + '/profile/type/wz'
