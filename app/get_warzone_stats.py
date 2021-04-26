@@ -4,6 +4,7 @@ import simplejson as ss
 import re
 import os
 import logging
+import json
 from stats_config import WARZONE_CONFIG
 
 LOG_FILE = WARZONE_CONFIG['LOGFILE']
@@ -15,23 +16,49 @@ class WarzoneStats(object):
         self.email = WARZONE_CONFIG['EMAIL']
         self.pw = WARZONE_CONFIG['PW']
         self.playername = playername
-        self.GAMEMODES = {'br_87': 'SOLO', 'br_25': 'TRIO', 'br_89': 'QUAD', 'br_dmz_85': 'DUO_PLUNDER', 'br_dmz_38': 'TRIO_PLUNDER', 'br_74': 'CLASSIC TR', 'br_88': 'DUO'}
-        self.Xsrf_token_URL = 'https://profile.callofduty.com/cod/login'
-        self.Auth_URL = 'https://profile.callofduty.com/do_login?new_SiteId=cod'
+        self.GAMEMODES = {'br_87': 'SOLO',
+                          'br_25': 'TRIO',
+                          'br_89': 'QUAD',
+                          'br_dmz_85': '2er PLUNDER',
+                          'br_dmz_38': '3er PLUNDER',
+                          'br_74': 'CLASSIC TR',
+                          'br_88': 'DUO',
+                          'br_rebirth_rbrthquad': '4er REBIRTH',
+                          'br_rebirth_rbrthtrios': '3er REBIRTH',
+                          'br_rebirth_rbrthduos': '2er REBIRTH',
+                          'br_rebirth_resurgence_trios': '3er REBIRTH VER',
+                          'br_dmz_plunquad': '4er PLUNDER'}
+
+        self.Xsrf_token_URL = 'https://s.activision.com/activision/login'
+        self.Auth_URL = 'https://s.activision.com/do_login?new_SiteId=activision'
         self.Stats_URL = 'https://my.callofduty.com/api/papi-client/stats/cod/v1/title/mw/platform/psn/gamer/' +self.playername + '/profile/type/wz'
         self.Match_URL = 'https://my.callofduty.com/api/papi-client/crm/cod/v2/title/mw/platform/psn/gamer/'+ self.playername +'/matches/wz/start/0/end/0/details'
         self.base_path = os.path.dirname(os.path.abspath(__file__))
         self.token_file_name = 'auth.token'
 
-    def load_all_cookies(self):
+    def load_cookies(self):
         cookie_file = os.path.join(self.base_path, 'auth_cookies.txt')
+        sso_token, sso_exp, atkn_token, api_token = False, False, False, False
         cookie_dict = {}
         try:
             with open(cookie_file, "r") as f:
                 for line in f.readlines():
                     line = line.rstrip('\n')
                     cookie_pair = line.split(",")
+                    if "ACT_SSO_COOKIE" == cookie_pair[0]:
+                        sso_token = cookie_pair[1]
+                    if "ACT_SSO_COOKIE_EXPIRY" == cookie_pair[0]:
+                        sso_exp = cookie_pair[1]
+                    if "atkn" == cookie_pair[0]:
+                        atkn_token = cookie_pair[1]
                     cookie_dict[cookie_pair[0]] = cookie_pair[1]
+
+            if sso_token and sso_exp and atkn_token:
+                cookies = {'ACT_SSO_COOKIE': sso_token,
+                           'ACT_SSO_COOKIE_EXPIRY': sso_exp,
+                           'atkn': atkn_token
+                           }
+                return cookies
 
         except IOError:
             print("File does not exist")
@@ -56,24 +83,23 @@ class WarzoneStats(object):
         payload = {'username': self.email, 'password': self.pw,
                    'remember_me':'true', '_csrf': xsrf_token}
 
-        r = s.post(self.Auth_URL, data=payload)
-        r = s.get(self.Stats_URL)
-        logging.info(f'new cookies saved')
+        r = s.post(self.Auth_URL, params=payload, timeout=15)
+        #r = s.get(self.Stats_URL)
         self.save_cookies(s.cookies)
+        logging.info(f'new cookies saved')
 
 
-    def request_player_data(self, cnt=5):
-        cookies = self.load_all_cookies()
+    def request_player_data(self, cnt=2):
+        cookies = self.load_cookies()
         if cnt != 0:
             if cookies:
                 r = requests.get(self.Stats_URL, cookies=cookies)
                 response_string = r.content.decode("utf-8")
-                error = re.search(r'error', response_string)
-                if error == None:
+                if 'error' not in response_string or 'not' not in response_string:
                     return r.json()['data']
                 else:
+                    print("getting new token")
                     logging.error(f'{response_string}')
-                    print(error)
                     self.obtain_new_token()
                     cnt -= 1
                     self.request_player_data(cnt)
@@ -88,7 +114,7 @@ class WarzoneStats(object):
 
 
     def request_match_data(self, cnt=5):
-        cookies = self.load_all_cookies()
+        cookies = self.load_cookies()
         if cnt != 0:
             if cookies:
 
@@ -174,14 +200,18 @@ class WarzoneStats(object):
                 continue
 
             if 'teamPlacement' not in collected_data['MatchPlayerStats']:
-                #print(f'no placement found for {self.playername}. search alternative data')
-                for t in range(0, len(match_dict['rankedTeams'])):
-                    for player in match_dict['rankedTeams'][t]['players']:
-                        converted_playername = self.converted_playername(player['username'])
-                        if self.playername == converted_playername:
-                            #print(player['username'])
-                            #print(f"new placement found {t + 1}")
-                            collected_data['MatchPlayerStats']['teamPlacement'] = t + 1
+                try:
+                    #print(f'no placement found for {self.playername}. search alternative data')
+                    for t in range(0, len(match_dict['rankedTeams'])):
+                        for player in match_dict['rankedTeams'][t]['players']:
+                            converted_playername = self.converted_playername(player['username'])
+                            if self.playername == converted_playername:
+                                #print(player['username'])
+                                #print(f"new placement found {t + 1}")
+                                collected_data['MatchPlayerStats']['teamPlacement'] = t + 1
+                except:
+                    print("cant find Teamplacement")
+                    collected_data['MatchPlayerStats']['teamPlacement'] = 0
 
 
             validated_data = self.validate_match_data(collected_data)
