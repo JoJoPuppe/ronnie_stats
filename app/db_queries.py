@@ -19,10 +19,10 @@ class DbQuery(object):
         return MatchStats.query.filter(MatchStats.matchID == matchID).all()
 
     def from_database_time_stats(self, playername, start_time, end_time):
-        return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode != 'DUO_PLUNDER', MatchStats.gameMode != 'TRIO_PLUNDER', MatchStats.utcStartSeconds > start_time, MatchStats.utcStartSeconds < end_time).order_by(MatchStats.utcStartSeconds).all()
+        return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode != '3er PLUNDER', MatchStats.gameMode != '2er PLUNDER', MatchStats.gameMode != '4er PLUNDER', MatchStats.utcStartSeconds > start_time, MatchStats.utcStartSeconds < end_time).order_by(MatchStats.utcStartSeconds).all()
 
     def from_database_count_stats(self, playername, match_count):
-        return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode != 'DUO_PLUNDER', MatchStats.gameMode != 'TRIO_PLUNDER').order_by(MatchStats.utcStartSeconds).limit(match_count).all()
+        return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode != '3er PLUNDER', MatchStats.gameMode != '2er PLUNDER', MatchStats.gameMode != '4er PLUNDER').order_by(MatchStats.utcStartSeconds).limit(match_count).all()
 
     def from_database_first_match(self):
         return MatchStats.query.first()
