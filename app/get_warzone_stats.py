@@ -180,6 +180,7 @@ class WarzoneStats(object):
         for match_dict in match_data:
             collected_data = {'MatchStat': {}, 'MatchPlayerStats': {}}
             if match_dict['mode'] not in self.GAMEMODES:
+                logging.info(f"game mode {match_dict['mode']} not supported")
                 print(f"game mode {match_dict['mode']} not supported")
                 continue
             try:
