@@ -1,152 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" >
-    <link rel="stylesheet" href="{{ url_for('static', filename='tail.css') }}">
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.4/dist/alpine.js" defer></script>
-  </head>
-  <body class="flex items-center justify-center antialiased text-gray-800 bg-gray-200 max-w-screen-md">
-    <div class="w-full">
-      <nav class="flex items-center justify-between bg-teal-600 border-b-2 border-teal-700">
-        <a href="{{ url_for('index') }}">
-          <button class="p-2 focus:outline-none">
-            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-8 h-8 text-gray-100 hover:text-gray-300"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          </button>
-        </a>
-        <div><p class="pr-4 text-2xl font-extrabold text-gray-100 uppercase">Stats | {{ match[0].gameMode }}</p></div>
-      </nav>
-      <div class="flex flex-no-wrap items-center justify-between px-4 py-2 bg-teal-700">
-        <div class="text-lg font-bold text-gray-100">
-            <p class="">{{ match[0].matchDate }}</p>
-            <p class="-mt-1">{{ match[0].matchStart }} - {{ match[0].matchEnd }}</p>
-        </div>
-        <div class="flex flex-no-wrap items-baseline justify-start -my-5 text-gray-100">
-          <p class="mx-1 text-3xl italic font-black">#</p>
-          <p class="text-6xl font-black">{{ match[0].teamPlacement }}</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-between px-2 py-1 text-xs font-bold text-gray-200 bg-gray-700">
-        <div class="flex flex-no-wrap items-end justify-start">
-          <p >Player:<span class="ml-1">{{ match[0].playerCount }}</span></p>
-          <p class="ml-2">Teams:<span class="ml-1">{{ match[0].teamCount }}</span></p>
-        </div>
-        <div class="flex flex-no-wrap items-end justify-start">
-          <p>Length:</p>
-          <p class="ml-2">{{ match[0].timePlayed }}</p>
-        </div>
-      </div>
-      <div class="flex flex-wrap items-baseline justify-center">
-        {% for player in match %}
-        <div class="flex-1 overflow-hidden">
-          <div>
-            <div class="px-2 py-2 border-b border-gray-500">
-              <div class="pb-2">
-                <p class="text-sm font-black tracking-tighter text-center uppercase truncate md:text-2xl">{{ player.playername }}</p>
-                <div class="text-center">
-                  <p class="text-3xl font-black tracking-tight">{{ player.kdRatio }}</p>
-                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">K/D</p>
-                </div>
-                <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ player.kills }}</p>
-                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Kills</p>
-                </div>
-                <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ player.downs }}</p>
-                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Downs</p>
-                </div>
-                <div class="text-center">
-                  <p class="text-4xl font-black tracking-wide">{{ player.deaths }}</p>
-                  <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Deaths</p>
-                </div>
-              </div>
+<div class="w-full">
+  <div class="flex flex-wrap items-baseline justify-center">
+    {% for player in match %}
+    <div class="flex-1 overflow-hidden">
+      <div>
+        <div class="px-2 py-2 border-b border-gray-500">
+          <div class="pb-2">
+            <p class="text-sm font-black tracking-tighter text-center uppercase truncate md:text-2xl">{{ player.playername }}</p>
+            <div class="text-center">
+              <p class="text-3xl font-black tracking-tight">{{ player.kdRatio }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">K/D</p>
             </div>
-            <div class="px-2 py-2 pb-3 border-b border-gray-500">
-              <div class="text-center">
-                <p class="text-xl font-black text-teal-600 md:text-5xl">{{ player.score }}</p>
-                <p class="text-sm font-bold text-gray-600 md:text-lg md:-mt-3 ">Score</p>
-                <p class="text-xl font-black text-teal-600 md:text-3xl">{{ player.scorePerMinute }}</p>
-                <p class="text-sm font-bold text-gray-600 md:text-base md:-mt-2 ">S/Min</p>
-              </div>
+            <div class="text-center">
+              <p class="text-4xl font-black tracking-wide">{{ player.kills }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Kills</p>
             </div>
-            <div class="px-2 py-2 pb-4 text-center border-b border-gray-500">
-              <div class="">
-                <p class="text-3xl font-black text-blue-600">{{ player.damageDone }}</p>
-                <p class="-mt-2 text-xs font-semibold leading-tight text-gray-500 md:text-sm">Dmg Done</p>
-              </div>
-              <div class="">
-                <p class="text-3xl font-black text-red-600">{{ player.damageTaken }}</p>
-                <p class="-mt-2 text-xs font-semibold leading-tight text-gray-500 md:text-sm">Dmg Taken</p>
-              </div>
+            <div class="text-center">
+              <p class="text-4xl font-black tracking-wide">{{ player.downs }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Downs</p>
             </div>
-            <div class="py-3 border-b border-gray-500">
-              <div class="text-center">
-                <p class="text-lg font-black text-teal-700 md:text-3xl">{{ player.totalXp }}</p>
-                <h4 class="text-xs md:text-base">total XP</h4>
-              </div>
-            </div>
-            <div class="py-2 border-b border-gray-500">
-              <div class="pb-2">
-                <div class="px-1 py-1 text-center">
-                  <p class="text-xl font-bold">{{ player.percentTimeMoving }}<span class="text-base">%</span></p>
-                  <p class="text-xs font-semibold text-gray-600">% Moving</p>
-                </div>
-                <div class="px-1 py-1 text-center">
-                  <p class="text-base font-bold tracking-tight md:text-xl">{{ player.distanceTraveled }}</p>
-                  <p class="text-xs font-semibold text-gray-600">Distance</p>
-                </div>
-                <div class="px-1 py-1 text-center">
-                  <p class="text-base font-bold tracking-tight md:text-xl">{{ player.teamSurvivalTime }}</p>
-                  <p class="text-xs font-semibold text-gray-600">Survival Time</p>
-                </div>
-              </div>
-            </div>
-            <div class="py-2 border-b border-gray-500">
-              <div class="pb-2">
-                <div class="px-1 text-center">
-                  <p class="text-xl font-bold">{{ player.revives }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Revives</p>
-                  <p class="text-xl font-bold">{{ player.headshots }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Headshots</p>
-                </div>
-                <div class="px-1 text-center">
-                  <p class="text-xl font-bold">{{ player.shopping }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Shop</p>
-                  <p class="text-xl font-bold">{{ player.teamWipes }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Team Wipes</p>
-                </div>
-                <div class="px-1 text-center">
-                  <p class="text-xl font-bold">{{ player.boxesOpen }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Boxes Open</p>
-                  <p class="text-xl font-bold">{{ player.longestStreak }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Kill Streak</p>
-                </div>
-                <div class="px-1 text-center">
-                  <p class="text-xl font-bold">{{ player.pickupTablet }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Tablet Pickup</p>
-                  <p class="text-xl font-bold">{{ player.lastStandKills }}</p>
-                  <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Last Man Kills</p>
-                </div>
-              </div>
-            </div>
-            <div class="py-3 border-b border-gray-500">
-              <p class="text-sm font-semibold text-center text-gray-600">C-Downs</p>
-              <div class="text-base text-gray-600">
-                <div class="text-center"><p class="{% if player.circle1 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle1 }}</p></div>
-                <div class="text-center"><p class="{% if player.circle2 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle2 }}</p></div>
-                <div class="text-center"><p class="{% if player.circle3 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle3 }}</p></div>
-                <div class="text-center"><p class="{% if player.circle4 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle4 }}</p></div>
-                <div class="text-center"><p class="{% if player.circle5 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle5 }}</p></div>
-                <div class="text-center"><p class="{% if player.circle6 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle6 }}</p></div>
-                <div class="text-center"><p class="{% if player.circle7 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle7 }}</p></div>
-              </div>
+            <div class="text-center">
+              <p class="text-4xl font-black tracking-wide">{{ player.deaths }}</p>
+              <p class="-mt-2 text-sm font-semibold tracking-wide text-gray-600">Deaths</p>
             </div>
           </div>
         </div>
-        {% endfor %}
+        <div class="px-2 py-2 pb-3 border-b border-gray-500">
+          <div class="text-center">
+            <p class="text-xl font-black text-teal-600 md:text-5xl">{{ player.score }}</p>
+            <p class="text-sm font-bold text-gray-600 md:text-lg md:-mt-3 ">Score</p>
+            <p class="text-xl font-black text-teal-600 md:text-3xl">{{ player.scorePerMinute }}</p>
+            <p class="text-sm font-bold text-gray-600 md:text-base md:-mt-2 ">S/Min</p>
+          </div>
+        </div>
+        <div class="px-2 py-2 pb-4 text-center border-b border-gray-500">
+          <div class="">
+            <p class="text-3xl font-black text-blue-600">{{ player.damageDone }}</p>
+            <p class="-mt-2 text-xs font-semibold leading-tight text-gray-500 md:text-sm">Dmg Done</p>
+          </div>
+          <div class="">
+            <p class="text-3xl font-black text-red-600">{{ player.damageTaken }}</p>
+            <p class="-mt-2 text-xs font-semibold leading-tight text-gray-500 md:text-sm">Dmg Taken</p>
+          </div>
+        </div>
+        <div class="py-3 border-b border-gray-500">
+          <div class="text-center">
+            <p class="text-lg font-black text-teal-700 md:text-3xl">{{ player.totalXp }}</p>
+            <h4 class="text-xs md:text-base">total XP</h4>
+          </div>
+        </div>
+        <div class="py-2 border-b border-gray-500">
+          <div class="pb-2">
+            <div class="px-1 py-1 text-center">
+              <p class="text-xl font-bold">{{ player.percentTimeMoving }}<span class="text-base">%</span></p>
+              <p class="text-xs font-semibold text-gray-600">% Moving</p>
+            </div>
+            <div class="px-1 py-1 text-center">
+              <p class="text-base font-bold tracking-tight md:text-xl">{{ player.distanceTraveled }}</p>
+              <p class="text-xs font-semibold text-gray-600">Distance</p>
+            </div>
+            <div class="px-1 py-1 text-center">
+              <p class="text-base font-bold tracking-tight md:text-xl">{{ player.teamSurvivalTime }}</p>
+              <p class="text-xs font-semibold text-gray-600">Survival Time</p>
+            </div>
+          </div>
+        </div>
+        <div class="py-2 border-b border-gray-500">
+          <div class="pb-2">
+            <div class="px-1 text-center">
+              <p class="text-xl font-bold">{{ player.revives }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Revives</p>
+              <p class="text-xl font-bold">{{ player.headshots }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Headshots</p>
+            </div>
+            <div class="px-1 text-center">
+              <p class="text-xl font-bold">{{ player.shopping }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Shop</p>
+              <p class="text-xl font-bold">{{ player.teamWipes }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Team Wipes</p>
+            </div>
+            <div class="px-1 text-center">
+              <p class="text-xl font-bold">{{ player.boxesOpen }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Boxes Open</p>
+              <p class="text-xl font-bold">{{ player.longestStreak }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Kill Streak</p>
+            </div>
+            <div class="px-1 text-center">
+              <p class="text-xl font-bold">{{ player.pickupTablet }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Tablet Pickup</p>
+              <p class="text-xl font-bold">{{ player.lastStandKills }}</p>
+              <p class="-mt-1 text-xs font-semibold tracking-tight text-gray-500">Last Man Kills</p>
+            </div>
+          </div>
+        </div>
+        <div class="py-3 border-b border-gray-500">
+          <p class="text-sm font-semibold text-center text-gray-600">C-Downs</p>
+          <div class="text-base text-gray-600">
+            <div class="text-center"><p class="{% if player.circle1 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle1 }}</p></div>
+            <div class="text-center"><p class="{% if player.circle2 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle2 }}</p></div>
+            <div class="text-center"><p class="{% if player.circle3 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle3 }}</p></div>
+            <div class="text-center"><p class="{% if player.circle4 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle4 }}</p></div>
+            <div class="text-center"><p class="{% if player.circle5 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle5 }}</p></div>
+            <div class="text-center"><p class="{% if player.circle6 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle6 }}</p></div>
+            <div class="text-center"><p class="{% if player.circle7 != 0 %} text-teal-600 font-black {% endif %}">{{ player.circle7 }}</p></div>
+          </div>
+        </div>
       </div>
     </div>
-  </body>
-</html>
+    {% endfor %}
+  </div>
+</div>

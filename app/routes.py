@@ -32,7 +32,14 @@ def matches(player):
 
     return render_template('matches.html', matches=matches)
 
-@app.route('/squad_match/<match_id>')
+# @app.route('/squad_match/<match_id>')
+# def squad_match(match_id):
+#     match_query = MatchConverter()
+#     match = match_query.create_squad_match_details(match_id)
+# 
+#     return render_template('squad_match.html', match=match)
+
+@app.route('/match_data/<match_id>')
 def squad_match(match_id):
     match_query = MatchConverter()
     match = match_query.create_squad_match_details(match_id)
