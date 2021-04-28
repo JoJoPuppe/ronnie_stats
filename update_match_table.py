@@ -35,7 +35,7 @@ else:
                 converted_playername = 'camarlengo'
 
             q = MatchStats.query.filter(and_(MatchStats.matchID == matchid,
-                                             MatchStats.playername == name)).first()
+                                             MatchStats.playername == converted_playername)).first()
             if q == None:
                 epoch = m['MatchStat']['utcStartSeconds']
                 start_match_time = time.strftime("%a, %d%b%Y %H:%M:%S", time.localtime(epoch))

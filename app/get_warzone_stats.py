@@ -2,6 +2,7 @@ import requests
 import time
 import simplejson as ss
 import re
+from collections import namedtuple
 import os
 import logging
 import json
@@ -32,6 +33,7 @@ class WarzoneStats(object):
         self.Xsrf_token_URL = 'https://s.activision.com/activision/login'
         self.Auth_URL = 'https://s.activision.com/do_login?new_SiteId=activision'
         self.Stats_URL = 'https://my.callofduty.com/api/papi-client/stats/cod/v1/title/mw/platform/psn/gamer/' +self.playername + '/profile/type/wz'
+        self.MatchID_URL = 'https://www.callofduty.com/api/papi-client/crm/cod/v2/title/mw/platform/psn/fullMatch/wz/'
         self.Match_URL = 'https://my.callofduty.com/api/papi-client/crm/cod/v2/title/mw/platform/psn/gamer/'+ self.playername +'/matches/wz/start/0/end/0/details'
         self.base_path = os.path.dirname(os.path.abspath(__file__))
         self.token_file_name = 'auth.token'
@@ -89,7 +91,7 @@ class WarzoneStats(object):
         logging.info(f'new cookies saved')
 
 
-    def request_player_data(self, cnt=2):
+    def request_player_data(self, cnt=5):
         cookies = self.load_cookies()
         if cnt != 0:
             if cookies:
@@ -101,10 +103,12 @@ class WarzoneStats(object):
                     print("getting new token")
                     logging.error(f'{response_string}')
                     self.obtain_new_token()
+                    time.sleep(5)
                     cnt -= 1
                     self.request_player_data(cnt)
             else:
                 self.obtain_new_token()
+                time.sleep(5)
                 cnt -= 1
                 self.request_player_data(cnt)
 
@@ -127,6 +131,31 @@ class WarzoneStats(object):
                     logging.error(f'{response_string}')
                     print(response['data'])
                     self.obtain_new_token()
+                    time.sleep(5)
+                    cnt -= 1
+                    self.request_match_data(cnt)
+            else:
+                self.obtain_new_token()
+                time.sleep(5)
+                cnt -= 1
+                self.request_match_data(cnt)
+
+        logging.error(f'5 request attemps with no result')
+        print("5 attempts. no succsess")
+        return None
+
+    def request_matchID(self, match_id, cnt=5):
+        cookies = self.load_cookies()
+        if cnt != 0:
+            if cookies:
+                URL = self.MatchID_URL + match_id + "/it"
+                r = requests.get(URL, cookies=cookies)
+                response = r.json()
+                if response['status'] != 'error':
+                    return r.json()['data']['allPlayers']
+                else:
+                    response_string = r.content.decode("utf-8")
+                    self.obtain_new_token()
                     cnt -= 1
                     self.request_match_data(cnt)
             else:
@@ -134,7 +163,6 @@ class WarzoneStats(object):
                 cnt -= 1
                 self.request_match_data(cnt)
 
-        logging.error(f'5 request attemps with no result')
         print("5 attempts. no succsess")
         return None
 
@@ -169,9 +197,31 @@ class WarzoneStats(object):
 
         return validated_data
 
+    def add_team_to_match_data(self, match_data):
+        TeamMatchID = namedtuple("TeamMatchID", "matchid team")
+        match_id_list= []
+        for match_dict in match_data:
+            if match_dict['mode'] not in self.GAMEMODES:
+                continue
+            match_id_list.append(TeamMatchID(matchid=match_dict['matchID'], team=match_dict['player']['team']))
+
+        team =[]
+        for teammatch in match_id_list:
+            all_match_players = self.request_matchID(teammatch.matchid)
+            if not all_match_players:
+                continue
+            for player in all_match_players:
+                if player['player']['team'] == teammatch.team and not player['player']['username'] == self.playername:
+                    team.append(player)
+
+        match_data.extend(team)
+
+        return match_data
+
 
     def collect_match_data(self):
         match_data = self.request_match_data()
+        match_data = self.add_team_to_match_data(match_data)
 
         if match_data == None:
             return None
