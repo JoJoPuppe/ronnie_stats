@@ -15,6 +15,11 @@ class DbQuery(object):
         q = db.session.query(MatchStats.matchID, sub.c.count_id, MatchStats.playername).join(sub, MatchStats.matchID == sub.c.matchID).filter(MatchStats.playername == playername).all()
         return [s[0] for s in q]
 
+    def from_database_team_matches(self, playernames):
+        sub = MatchStats.query.with_entities(MatchStats.id, MatchStats.matchID, MatchStats.playername).filter(MatchStats.playername.in_(playernames)).group_by(MatchStats.matchID).having(func.count(MatchStats.matchID) == len(playernames)).subquery()
+        q = MatchStats.query.join(sub, MatchStats.matchID == sub.c.matchID).filter(MatchStats.playername.in_(playernames)).order_by(desc(MatchStats.utcStartSeconds)).limit(60).all()
+        return q
+
     def from_database_squad_details(self, matchID):
         return MatchStats.query.filter(MatchStats.matchID == matchID).all()
 

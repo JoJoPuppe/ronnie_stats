@@ -5,6 +5,7 @@ from sqlalchemy import func
 from app.models import LifeTimeStats, WeeklyStats
 from flask import render_template, request
 
+from app.db_queries import DbQuery
 from app.convert_stats import DataConverter
 from app.convert_match_stats import MatchConverter
 from app.convert_interval_stats import IntervalConverter
@@ -12,6 +13,8 @@ from app.PropFirst import PropFirst
 from app.bestof import Score
 from stats_config import WARZONE_CONFIG
 from copy import deepcopy
+
+query = DbQuery()
 
 @app.route('/')
 @app.route('/index')
@@ -54,6 +57,7 @@ def player_profil():
     players = request.args.getlist('players')
     interval = request.args.get('interval')
     mi = request.args.get('mi')
+    only_teams_stats = request.args.get('team')
 
     try:
         x = int(mi)
@@ -80,8 +84,14 @@ def player_profil():
 
     profil_query = IntervalConverter()
     data = []
-    for player in checked_players:
-        data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
+
+    if only_teams_stats:
+        interval = 'Last-20-Matches'
+        data = profil_query.get_team_matches(checked_players)
+
+    else:
+        for player in checked_players:
+            data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
 
     reorder = PropFirst()
     real_data = reorder.reorganize(data, reorder.real_data)

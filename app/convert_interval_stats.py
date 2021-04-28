@@ -119,7 +119,9 @@ class IntervalConverter(object):
 
         return percent_diff
 
-    def get_time_stats(self, playername, interval, interval_diff):
+    def get_time_stats(self, playername, interval, interval_diff, team=False):
+        if team:
+            print(team)
 
         interval_seconds = self.get_seconds_of_interval(interval, interval_diff)
 
@@ -175,16 +177,36 @@ class IntervalConverter(object):
 
         return time_interval_stats_dict
 
+    def get_team_matches(self, team):
+        #team = ['dlt_orko', 'neuner_eisen', 'jojopuppe']
+        team_data = query.from_database_team_matches(team)
+        match_list = self.clean_interval_list(team_data)
+        sep_names = []
+        for name in team:
+            name_list = []
+            for match in match_list:
+               if match['playername'] == name:
+                   name_list.append(match)
+
+            player_matches = self.setup_match_count_stats(name, name_list)
+            sep_names.append(player_matches)
+
+        return sep_names
+
 
     def get_match_count_stats(self, playername, interval):
-        count_interval_stats_dict = {}
         count = {self.int_string[3]: 30, self.int_string[4]: 50, self.int_string[5]: 100}
 
         interval_count = count[interval]
 
         q = query.from_database_count_stats(playername, interval_count)
+
         match_list = self.clean_interval_list(q)
 
+        return self.setup_match_count_stats(playername, match_list)
+
+
+    def setup_match_count_stats(self, playername, match_list):
         interval_sum_list = self.average_sum_data(self.sum_stats(match_list))
 
         #interval_sum_list = self.rows_to_columns([interval_sum_list])
@@ -194,7 +216,7 @@ class IntervalConverter(object):
             ticks.append(self.average_sum_data(tick))
 
         #ticks = self.rows_to_columns(ticks)
-
+        count_interval_stats_dict = {}
         count_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(match_list[0]['utcStartSeconds'])
         count_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(match_list[-1]['utcStartSeconds'])
         count_interval_stats_dict['inter'] = [interval_sum_list]
