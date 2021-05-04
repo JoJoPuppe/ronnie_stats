@@ -22,6 +22,7 @@ class WarzoneStats(object):
                           'br_89': 'QUAD',
                           'br_dmz_85': '2er PLUNDER',
                           'br_dmz_38': '3er PLUNDER',
+                          'br_dmz_plnbld': 'Blood Money',
                           'br_74': 'CLASSIC TR',
                           'br_88': 'DUO',
                           'br_rebirth_rbrthquad': '4er REBIRTH',
