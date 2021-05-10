@@ -22,6 +22,7 @@ class WarzoneStats(object):
                           'br_89': 'QUAD',
                           'br_dmz_85': '2er PLUNDER',
                           'br_dmz_38': '3er PLUNDER',
+                          'br_dmz_plndtrios': '3er PLUNDER',
                           'br_dmz_plnbld': 'Blood Money',
                           'br_74': 'CLASSIC TR',
                           'br_88': 'DUO',
@@ -29,6 +30,7 @@ class WarzoneStats(object):
                           'br_rebirth_rbrthtrios': '3er REBIRTH',
                           'br_rebirth_rbrthduos': '2er REBIRTH',
                           'br_rebirth_resurgence_trios': '3er REBIRTH VER',
+                          'br_mini_rebirth_mini_royale_quads' :'4er Mini Royal Rebirth',
                           'br_dmz_plunquad': '4er PLUNDER'}
 
         self.Xsrf_token_URL = 'https://s.activision.com/activision/login'
