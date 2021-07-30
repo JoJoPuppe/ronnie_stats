@@ -8,7 +8,13 @@ import logging
 import json
 from stats_config import WARZONE_CONFIG
 
+from telegram.ext import Updater
+
 LOG_FILE = WARZONE_CONFIG['LOGFILE']
+
+# telegram bot toten
+updater = Updater(token=WARZONE_CONFIG['TELEGRAM_TOKEN'],
+		use_context=True)
 
 logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -145,6 +151,8 @@ class WarzoneStats(object):
 
         logging.error(f'5 request attemps with no result')
         print("5 attempts. no succsess")
+        updater.bot.send_message(chat_id=WARZONE_CONFIG['TELEGRAM_CHAT_ID'],\
+                text="5 request attemps. tokens may not working.")
         return None
 
     def request_matchID(self, match_id, cnt=5):
