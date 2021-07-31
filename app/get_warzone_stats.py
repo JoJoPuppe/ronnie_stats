@@ -100,60 +100,42 @@ class WarzoneStats(object):
         logging.info(f'new cookies saved')
 
 
-    def request_player_data(self, cnt=5):
-        cookies = self.load_cookies()
+    def request_player_data(self, cnt=1):
         if cnt != 0:
-            if cookies:
-                r = requests.get(self.Stats_URL, cookies=cookies)
-                response_string = r.content.decode("utf-8")
-                if 'error' not in response_string or 'not' not in response_string:
-                    return r.json()['data']
-                else:
-                    print("getting new token")
-                    logging.error(f'{response_string}')
-                    self.obtain_new_token()
-                    time.sleep(5)
-                    cnt -= 1
-                    self.request_player_data(cnt)
+            cookies = self.load_cookies()
+            r = requests.get(self.Stats_URL, cookies=cookies)
+            response_string = r.content.decode("utf-8")
+            if 'error' not in response_string or 'not' not in response_string:
+                return r.json()['data']
             else:
-                self.obtain_new_token()
-                time.sleep(5)
-                cnt -= 1
-                self.request_player_data(cnt)
-
-        logging.error(f'5 request attemps with no result')
-        print("5 attempts. no succsess")
-        return None
-
-
-    def request_match_data(self, cnt=5):
-        cookies = self.load_cookies()
-        if cnt != 0:
-            if cookies:
-
-                r = requests.get(self.Match_URL, cookies=cookies)
-                response = r.json()
-                if response['status'] != 'error':
-                    return r.json()['data']['matches']
-                else:
-                    response_string = r.content.decode("utf-8")
-                    logging.error(f'{response_string}')
-                    print(response['data'])
-                    self.obtain_new_token()
-                    time.sleep(5)
-                    cnt -= 1
-                    self.request_match_data(cnt)
-            else:
-                self.obtain_new_token()
-                time.sleep(5)
+                logging.error(f'{response_string}')
+                time.sleep(480)
                 cnt -= 1
                 self.request_match_data(cnt)
 
-        logging.error(f'5 request attemps with no result')
-        print("5 attempts. no succsess")
-        updater.bot.send_message(chat_id=WARZONE_CONFIG['TELEGRAM_CHAT_ID'],\
-                text="5 request attemps. tokens may not working.")
-        return None
+            return None
+
+
+    def request_match_data(self, cnt=1):
+        if cnt != 0:
+            cookies = self.load_cookies()
+            r = requests.get(self.Match_URL, cookies=cookies)
+            response = r.json()
+            if response['status'] != 'error':
+                return r.json()['data']['matches']
+            else:
+                response_string = r.content.decode("utf-8")
+                logging.error(f'{response_string}')
+                print(response['data'])
+                time.sleep(480)
+                cnt -= 1
+                self.request_match_data(cnt)
+
+            print("1 attempts. no succsess")
+            updater.bot.send_message(chat_id=WARZONE_CONFIG['TELEGRAM_CHAT_ID'],\
+                    text="tokens may not working.")
+            return None
+
 
     def request_matchID(self, match_id, cnt=5):
         cookies = self.load_cookies()
