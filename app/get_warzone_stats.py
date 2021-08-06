@@ -47,117 +47,109 @@ class WarzoneStats(object):
         self.base_path = os.path.dirname(os.path.abspath(__file__))
         self.token_file_name = 'auth.token'
 
-    def load_cookies(self):
-        cookie_file = os.path.join(self.base_path, 'auth_cookies.txt')
-        sso_token, sso_exp, atkn_token, api_token = False, False, False, False
+        self.cookie_file = os.path.join(self.base_path, 'auth_cookies.json')
+        self.new_cookie_file = os.path.join(self.base_path, 'new_auth_cookies.json')
+
+
+    def merge_cookies(self):
+        new_cookies = self.load_cookies(self.new_cookie_file)
+        current_cookies = self.load_cookies(self.cookie_file)
+        updated_cookies = []
+        if current_cookies:
+            for cookie in current_cookies['cookies']:
+                if cookie['fails'] >= 5:
+                    continue
+                updated_cookies.append(cookie)
+
+        if new_cookies:
+            updated_cookies.extend(new_cookies['cookies'])
+
+        cookie_dict = {"cookies": updated_cookies}
+
+        with open(self.cookie_file, "w+") as f:
+            json.dump(cookie_dict, f)
+
+        try:
+            os.remove(self.new_cookie_file)
+        except:
+            print(f"{self.new_cookie_file}: does not exist")
+
+
+
+    def load_cookies(self, path_to_file) -> dict:
         cookie_dict = {}
         try:
-            with open(cookie_file, "r") as f:
-                for line in f.readlines():
-                    line = line.rstrip('\n')
-                    cookie_pair = line.split(",")
-                    if "ACT_SSO_COOKIE" == cookie_pair[0]:
-                        sso_token = cookie_pair[1]
-                    if "ACT_SSO_COOKIE_EXPIRY" == cookie_pair[0]:
-                        sso_exp = cookie_pair[1]
-                    if "atkn" == cookie_pair[0]:
-                        atkn_token = cookie_pair[1]
-                    cookie_dict[cookie_pair[0]] = cookie_pair[1]
-
-            if sso_token and sso_exp and atkn_token:
-                cookies = {'ACT_SSO_COOKIE': sso_token,
-                           'ACT_SSO_COOKIE_EXPIRY': sso_exp,
-                           'atkn': atkn_token
-                           }
-                return cookies
+            with open(path_to_file, "r") as f:
+                cookie_dict = json.load(f)
+                return cookie_dict
 
         except IOError:
             print("File does not exist")
-            cookie_dict = False
-
-        return cookie_dict
+            return {}
 
 
-    def save_cookies(self, cookies):
-        cookies_file = os.path.join(self.base_path, 'auth_cookies.txt')
-        with open(cookies_file, 'w+') as f:
-            for k, v in cookies.items():
-                line = k + "," + v + "\n"
-                f.write(line)
+    def update_cookies(self, cookie_dict):
+        with open(self.cookie_file, 'w+') as f:
+            json.dump(cookie_dict, f)
 
 
-    def obtain_new_token(self):
-        s = requests.Session()
-
-        r = s.get(self.Xsrf_token_URL)
-        xsrf_token = r.cookies['XSRF-TOKEN']
-        payload = {'username': self.email, 'password': self.pw,
-                   'remember_me':'true', '_csrf': xsrf_token}
-
-        r = s.post(self.Auth_URL, params=payload, timeout=15)
-        #r = s.get(self.Stats_URL)
-        self.save_cookies(s.cookies)
-        logging.info(f'new cookies saved')
-
-
-    def request_player_data(self, cnt=1):
-        if cnt != 0:
-            cookies = self.load_cookies()
+    def request_player_data(self):
+        cookie_dict = self.load_cookies(self.cookie_file)
+        if not cookie_dict:
+            return None
+        for cookie in cookie_dict['cookies']:
+            cookies = cookie['data']
             r = requests.get(self.Stats_URL, cookies=cookies)
             response_string = r.content.decode("utf-8")
             if 'error' not in response_string or 'not' not in response_string:
                 return r.json()['data']
             else:
-                logging.error(f'{response_string}')
-                time.sleep(480)
-                cnt -= 1
-                self.request_match_data(cnt)
+                cookie['fails'] += 1
+                print(f"cookies not working. fails: {cookie['fails']}")
+                print("waiting 5sec")
+                time.sleep(5)
+        
+        self.update_cookies(cookie_dict)
+        return None
 
+
+    def request_match_data(self):
+        cookie_dict = self.load_cookies(self.cookie_file)
+        if not cookie_dict:
             return None
-
-
-    def request_match_data(self, cnt=1):
-        if cnt != 0:
-            cookies = self.load_cookies()
+        for cookie in cookie_dict['cookies']:
+            cookies = cookie['data']
             r = requests.get(self.Match_URL, cookies=cookies)
             response = r.json()
             if response['status'] != 'error':
                 return r.json()['data']['matches']
             else:
-                response_string = r.content.decode("utf-8")
-                logging.error(f'{response_string}')
-                print(response['data'])
-                time.sleep(480)
-                cnt -= 1
-                self.request_match_data(cnt)
+                cookie['fails'] += 1
+                print(f"cookies not working. fails: {cookie['fails']}")
+                print("waiting 5sec")
+                time.sleep(5)
+                return None
 
-            print("1 attempts. no succsess")
-            updater.bot.send_message(chat_id=WARZONE_CONFIG['TELEGRAM_CHAT_ID'],\
-                    text="tokens may not working.")
-            return None
-
-
-    def request_matchID(self, match_id, cnt=5):
-        cookies = self.load_cookies()
-        if cnt != 0:
-            if cookies:
-                URL = self.MatchID_URL + match_id + "/it"
-                r = requests.get(URL, cookies=cookies)
-                response = r.json()
-                if response['status'] != 'error':
-                    return r.json()['data']['allPlayers']
-                else:
-                    response_string = r.content.decode("utf-8")
-                    self.obtain_new_token()
-                    cnt -= 1
-                    self.request_match_data(cnt)
-            else:
-                self.obtain_new_token()
-                cnt -= 1
-                self.request_match_data(cnt)
-
-        print("5 attempts. no succsess")
+        self.update_cookies(cookie_dict)
         return None
+
+
+    def request_matchID(self, match_id):
+        cookie_dict = self.load_cookies(self.cookie_file)
+        if not cookie_dict:
+            return None
+        for cookie in cookie_dict['cookies']:
+            cookies = cookie['data']
+            URL = self.MatchID_URL + match_id + "/it"
+            r = requests.get(URL, cookies=cookies)
+            response = r.json()
+            if response['status'] != 'error':
+                return r.json()['data']['allPlayers']
+            else:
+                logging.error("request MatchID failed")
+
+        return None
+
 
     def converted_playername(self, playername):
         converted_playername = re.sub(r'^\[.*\]','', playername.lower())
@@ -189,6 +181,7 @@ class WarzoneStats(object):
         validated_data = self.validate_data(collected_data)
 
         return validated_data
+
 
     def add_team_to_match_data(self, match_data):
         TeamMatchID = namedtuple("TeamMatchID", "matchid team")

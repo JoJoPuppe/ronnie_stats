@@ -16,6 +16,7 @@ LOG_FILE = WARZONE_CONFIG['LOGFILE']
 logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
 test_request = WarzoneStats('jojopuppe')
+test_request.merge_cookies()
 if test_request.request_match_data() == None:
     logging.error(f"no matches recorded")
 
