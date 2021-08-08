@@ -64,6 +64,9 @@ class WarzoneStats(object):
         if new_cookies:
             updated_cookies.extend(new_cookies['cookies'])
 
+        if len(updated_cookies) <= 0:
+            updater.bot.send_message(chat_id=WARZONE_CONFIG['TELEGRAM_CHAT_ID'], text="no working cookies left. please add more cookies.")
+
         cookie_dict = {"cookies": updated_cookies}
 
         with open(self.cookie_file, "w+") as f:
@@ -122,8 +125,6 @@ class WarzoneStats(object):
             r = requests.get(self.Match_URL, cookies=cookies)
             response = r.json()
             if response['status'] != 'error':
-                with open("response_from_server.json", "w+") as f:
-                    json.dump(response, f)
                 return r.json()['data']['matches']
             else:
                 #with open("response_from_server.json", "w+") as f:
