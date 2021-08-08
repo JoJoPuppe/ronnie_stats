@@ -21,6 +21,8 @@ else:
     for name in NAMES:
         get_stat_obj = WarzoneStats(name)
         jdata = get_stat_obj.collect_player_data()
+        if jdata == None:
+            continue
 
         time_played = jdata['br_lifetime']['timePlayed']
 

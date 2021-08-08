@@ -2,7 +2,6 @@ from app import app
 from app import db
 from app.models import MatchStats
 from app.get_warzone_stats import WarzoneStats
-import os
 import time
 from sqlalchemy import and_
 import re
@@ -15,15 +14,15 @@ LOG_FILE = WARZONE_CONFIG['LOGFILE']
 
 logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
-test_request = WarzoneStats('jojopuppe')
-test_request.merge_cookies()
-if test_request.request_match_data() == None:
-    logging.error(f"no matches recorded")
 
-else:
-    for name in NAMES:
-        get_stat_obj = WarzoneStats(name)
-        jdata = get_stat_obj.collect_match_data()
+for name in NAMES:
+    get_stat_obj = WarzoneStats(name)
+    match_data = get_stat_obj.request_match_data()
+    if match_data == None:
+        logging.error(f"no matches for {name} recorded")
+        print(f"no matches for {name} recorded")
+    else:
+        jdata = get_stat_obj.collect_match_data(match_data)
 
         for m in jdata:
 
@@ -36,12 +35,13 @@ else:
                 converted_playername = 'camarlengo'
 
             q = MatchStats.query.filter(and_(MatchStats.matchID == matchid,
-                                             MatchStats.playername == converted_playername)).first()
+                                                MatchStats.playername == converted_playername)).first()
             if q == None:
                 epoch = m['MatchStat']['utcStartSeconds']
                 start_match_time = time.strftime("%a, %d%b%Y %H:%M:%S", time.localtime(epoch))
                 logging.info(f'match {start_match_time} of {name} added')
             else:
+                print(f"match from {name} already in db")
                 continue
 
             record = MatchStats(
@@ -90,8 +90,9 @@ else:
                         damageTaken = int(m['MatchPlayerStats']['damageTaken']))
 
             db.session.add(record)
+            print(f"match added {name}")
 
-        logging.info(f'matches of {name} done. wait 3s')
-        time.sleep(3)
+    logging.info(f'matches of {name} done. wait 3s')
+    time.sleep(3)
 
-    db.session.commit()
+db.session.commit()

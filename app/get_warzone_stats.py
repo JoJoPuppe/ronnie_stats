@@ -122,8 +122,12 @@ class WarzoneStats(object):
             r = requests.get(self.Match_URL, cookies=cookies)
             response = r.json()
             if response['status'] != 'error':
+                with open("response_from_server.json", "w+") as f:
+                    json.dump(response, f)
                 return r.json()['data']['matches']
             else:
+                #with open("response_from_server.json", "w+") as f:
+                ##    json.dump(response, f)
                 cookie['fails'] += 1
                 print(f"cookies not working. fails: {cookie['fails']}")
                 print("waiting 5sec")
@@ -146,6 +150,7 @@ class WarzoneStats(object):
             if response['status'] != 'error':
                 return r.json()['data']['allPlayers']
             else:
+                print("request matchID failed")
                 logging.error("request MatchID failed")
 
         return None
@@ -205,12 +210,9 @@ class WarzoneStats(object):
         return match_data
 
 
-    def collect_match_data(self):
-        match_data = self.request_match_data()
+    def collect_match_data(self, match_data_in):
+        match_data = match_data_in
         match_data = self.add_team_to_match_data(match_data)
-
-        if match_data == None:
-            return None
 
         validate_match_list = []
         for match_dict in match_data:
