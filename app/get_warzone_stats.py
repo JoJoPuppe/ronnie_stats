@@ -1,28 +1,17 @@
 import requests
-import time
-import simplejson as ss
 import re
 from collections import namedtuple
-import os
 import logging
-import json
 from stats_config import WARZONE_CONFIG
 
-from telegram.ext import Updater
-
 LOG_FILE = WARZONE_CONFIG['LOGFILE']
-
-# telegram bot toten
-updater = Updater(token=WARZONE_CONFIG['TELEGRAM_TOKEN'],
-		use_context=True)
 
 logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
 class WarzoneStats(object):
-    def __init__(self, playername):
-        self.email = WARZONE_CONFIG['EMAIL']
-        self.pw = WARZONE_CONFIG['PW']
+    def __init__(self, playername, cookies):
         self.playername = playername
+        self.cookies = cookies
         self.GAMEMODES = {'br_87': 'SOLO',
                           'br_25': 'TRIO',
                           'br_89': 'QUAD',
@@ -39,122 +28,51 @@ class WarzoneStats(object):
                           'br_mini_rebirth_mini_royale_quads' :'4er Mini Royal Rebirth',
                           'br_dmz_plunquad': '4er PLUNDER'}
 
-        self.Xsrf_token_URL = 'https://s.activision.com/activision/login'
-        self.Auth_URL = 'https://s.activision.com/do_login?new_SiteId=activision'
         self.Stats_URL = 'https://my.callofduty.com/api/papi-client/stats/cod/v1/title/mw/platform/psn/gamer/' +self.playername + '/profile/type/wz'
         self.MatchID_URL = 'https://www.callofduty.com/api/papi-client/crm/cod/v2/title/mw/platform/psn/fullMatch/wz/'
         self.Match_URL = 'https://my.callofduty.com/api/papi-client/crm/cod/v2/title/mw/platform/psn/gamer/'+ self.playername +'/matches/wz/start/0/end/0/details'
-        self.base_path = os.path.dirname(os.path.abspath(__file__))
-        self.token_file_name = 'auth.token'
-
-        self.cookie_file = os.path.join(self.base_path, 'auth_cookies.json')
-        self.new_cookie_file = os.path.join(self.base_path, 'new_auth_cookies.json')
-
-
-    def merge_cookies(self):
-        new_cookies = self.load_cookies(self.new_cookie_file)
-        current_cookies = self.load_cookies(self.cookie_file)
-        updated_cookies = []
-        if current_cookies:
-            for cookie in current_cookies['cookies']:
-                if cookie['fails'] >= 5:
-                    continue
-                updated_cookies.append(cookie)
-
-        if new_cookies:
-            updated_cookies.extend(new_cookies['cookies'])
-
-        if len(updated_cookies) <= 0:
-            updater.bot.send_message(chat_id=WARZONE_CONFIG['TELEGRAM_CHAT_ID'], text="no working cookies left. please add more cookies.")
-
-        cookie_dict = {"cookies": updated_cookies}
-
-        with open(self.cookie_file, "w+") as f:
-            json.dump(cookie_dict, f)
-
-        try:
-            os.remove(self.new_cookie_file)
-        except:
-            print(f"{self.new_cookie_file}: does not exist")
-
-
-
-    def load_cookies(self, path_to_file) -> dict:
-        cookie_dict = {}
-        try:
-            with open(path_to_file, "r") as f:
-                cookie_dict = json.load(f)
-                return cookie_dict
-
-        except IOError:
-            print("File does not exist")
-            return {}
-
-
-    def update_cookies(self, cookie_dict):
-        with open(self.cookie_file, 'w+') as f:
-            json.dump(cookie_dict, f)
 
 
     def request_player_data(self):
-        cookie_dict = self.load_cookies(self.cookie_file)
-        if not cookie_dict:
+        cookie = self.cookies
+        if not cookie:
             return None
-        for cookie in cookie_dict['cookies']:
-            cookies = cookie['data']
-            r = requests.get(self.Stats_URL, cookies=cookies)
-            response_string = r.content.decode("utf-8")
-            if 'error' not in response_string or 'not' not in response_string:
-                return r.json()['data']
-            else:
-                cookie['fails'] += 1
-                print(f"cookies not working. fails: {cookie['fails']}")
-                print("waiting 5sec")
-                time.sleep(5)
+        cookies = cookie['data']
+        r = requests.get(self.Stats_URL, cookies=cookies)
+        response_string = r.content.decode("utf-8")
+        if 'error' not in response_string or 'not' not in response_string:
+            return r.json()['data']
         
-        self.update_cookies(cookie_dict)
         return None
 
 
     def request_match_data(self):
-        cookie_dict = self.load_cookies(self.cookie_file)
-        if not cookie_dict:
+        cookie = self.cookies
+        if not cookie:
             return None
-        for cookie in cookie_dict['cookies']:
-            cookies = cookie['data']
-            r = requests.get(self.Match_URL, cookies=cookies)
-            response = r.json()
-            if response['status'] != 'error':
-                return r.json()['data']['matches']
-            else:
-                #with open("response_from_server.json", "w+") as f:
-                ##    json.dump(response, f)
-                cookie['fails'] += 1
-                print(f"cookies not working. fails: {cookie['fails']}")
-                print("waiting 5sec")
-                time.sleep(5)
-                return None
+        cookies = cookie['data']
+        r = requests.get(self.Match_URL, cookies=cookies)
+        response = r.json()
+        if response['status'] != 'error':
+            return r.json()['data']['matches']
 
-        self.update_cookies(cookie_dict)
         return None
 
 
     def request_matchID(self, match_id):
-        cookie_dict = self.load_cookies(self.cookie_file)
-        if not cookie_dict:
+        cookie = self.cookies
+        if not cookie:
             return None
-        for cookie in cookie_dict['cookies']:
-            cookies = cookie['data']
-            URL = self.MatchID_URL + match_id + "/it"
-            r = requests.get(URL, cookies=cookies)
-            response = r.json()
-            if response['status'] != 'error':
-                return r.json()['data']['allPlayers']
-            else:
-                print("request matchID failed")
-                logging.error("request MatchID failed")
-
-        return None
+        cookies = cookie['data']
+        URL = self.MatchID_URL + match_id + "/it"
+        r = requests.get(URL, cookies=cookies)
+        response = r.json()
+        if response['status'] != 'error':
+            return r.json()['data']['allPlayers']
+        else:
+            print("request matchID failed")
+            logging.error("request MatchID failed")
+            return None
 
 
     def converted_playername(self, playername):
