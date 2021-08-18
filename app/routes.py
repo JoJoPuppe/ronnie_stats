@@ -13,6 +13,7 @@ from app.PropFirst import PropFirst
 from app.bestof import Score
 from stats_config import WARZONE_CONFIG
 from copy import deepcopy
+import json
 
 query = DbQuery()
 
@@ -34,6 +35,20 @@ def matches(player):
     matches = match_query.create_match_data(player)
 
     return render_template('matches.html', matches=matches)
+
+
+@app.route('/matches_json/<player>')
+def matches_json(player):
+    match_query = MatchConverter()
+    matches = match_query.create_match_data(player)
+    for match in matches:
+        del match['timestamp']
+    response = app.response_class(
+            response=json.dumps(matches),
+            status=200,
+            mimetype='application/json'
+        )
+    return response
 
 # @app.route('/squad_match/<match_id>')
 # def squad_match(match_id):
