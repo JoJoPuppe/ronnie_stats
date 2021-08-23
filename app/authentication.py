@@ -55,6 +55,8 @@ class Authentication(object):
         cookie_dict = {}
         try:
             with open(path_to_file, "r") as f:
+                if len(f.read()) < 1:
+                    return {}
                 cookie_dict = json.load(f)
                 return cookie_dict
 
