@@ -16,6 +16,11 @@ class MatchConverter(object):
         q = query.from_database_matchstats(str(playername))
         return self.consolidate_stats(q, squad_ids)
 
+    def create_match_data_paginate(self, playername, page):
+        squad_ids = query.from_database_squad_match(playername)
+        q = query.from_database_matchstats_paginate(str(playername), int(page)).items
+        return self.consolidate_stats(q, squad_ids)
+
     def consolidate_stats(self, query_results, squad_ids):
         self.match_list = []
 

@@ -10,6 +10,10 @@ class DbQuery(object):
         return MatchStats.query.filter(MatchStats.playername == playername).\
                 order_by(desc(MatchStats.utcStartSeconds)).limit(20).all()
 
+    def from_database_matchstats_paginate(self, playername, page):
+        return MatchStats.query.filter(MatchStats.playername == playername).\
+                order_by(desc(MatchStats.utcStartSeconds)).paginate(page=page, per_page=5)
+
     def from_database_squad_match(self, playername):
         sub = MatchStats.query.with_entities(MatchStats.id, MatchStats.matchID, func.count(MatchStats.matchID).label("count_id") ).group_by(MatchStats.matchID).having((func.count(MatchStats.matchID) > 1)).subquery()
         q = db.session.query(MatchStats.matchID, sub.c.count_id, MatchStats.playername).join(sub, MatchStats.matchID == sub.c.matchID).filter(MatchStats.playername == playername).all()

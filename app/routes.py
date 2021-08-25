@@ -37,10 +37,12 @@ def matches(player):
     return render_template('matches.html', matches=matches)
 
 
-@app.route('/matches_json/<player>')
-def matches_json(player):
+@app.route('/matches_json')
+def matches_json():
+    player = request.args['player']
+    page = request.args['page']
     match_query = MatchConverter()
-    matches = match_query.create_match_data(player)
+    matches = match_query.create_match_data_paginate(player, page)
     for match in matches:
         del match['timestamp']
     response = app.response_class(
