@@ -52,6 +52,21 @@ def matches_json():
         )
     return response
 
+@app.route('/squad_match_json')
+def squad_match_json():
+    matchId = request.args['matchid']
+    match_query = MatchConverter()
+    match = match_query.create_squad_match_details(matchId)
+    print(match)
+    for player in match:
+        del player['timestamp']
+    response = app.response_class(
+            response=json.dumps(match),
+            status=200,
+            mimetype='application/json'
+        )
+    return response
+
 # @app.route('/squad_match/<match_id>')
 # def squad_match(match_id):
 #     match_query = MatchConverter()
@@ -63,7 +78,6 @@ def matches_json():
 def squad_match(match_id):
     match_query = MatchConverter()
     match = match_query.create_squad_match_details(match_id)
-
     return render_template('squad_match.html', match=match)
 
 @app.route('/weekly')
