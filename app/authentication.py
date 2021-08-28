@@ -30,11 +30,11 @@ class Authentication(object):
         current_cookies = self.load_cookies(self.cookie_file)
         write_new_cookie_file = False
 
-        if new_cookies['cookies']:
+        if new_cookies:
             write_new_cookie_file = True
             updated_cookies.extend(new_cookies['cookies'])
         
-        if current_cookies['cookies']:
+        if current_cookies:
             for cookie in current_cookies['cookies']:
                 if cookie['fails'] >= 8:
                     write_new_cookie_file = True
@@ -69,8 +69,3 @@ class Authentication(object):
             print("File does not exist")
             return {}
 
-
-    def cookies_failed(self, index: int):
-        self._cookies["cookies"][index]["fails"] += 1
-        with open(self.cookie_file, 'w+') as f:
-            json.dump(self.cookies, f)
