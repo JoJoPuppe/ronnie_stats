@@ -30,11 +30,11 @@ class Authentication(object):
         current_cookies = self.load_cookies(self.cookie_file)
         write_new_cookie_file = False
 
-        if new_cookies:
+        if "cookies" in new_cookies:
             write_new_cookie_file = True
             updated_cookies.extend(new_cookies['cookies'])
         
-        if current_cookies:
+        if "cookies" in current_cookies:
             for cookie in current_cookies['cookies']:
                 if cookie['fails'] >= 8:
                     write_new_cookie_file = True
