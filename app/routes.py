@@ -1,7 +1,4 @@
 from app import app
-from app import db
-from datetime import datetime
-from sqlalchemy import func
 from app.models import LifeTimeStats, WeeklyStats
 from flask import render_template, request
 
@@ -12,7 +9,6 @@ from app.convert_interval_stats import IntervalConverter
 from app.PropFirst import PropFirst
 from app.bestof import Score
 from stats_config import WARZONE_CONFIG
-from copy import deepcopy
 import json
 
 query = DbQuery()
@@ -65,6 +61,65 @@ def squad_match_json():
             status=200,
             mimetype='application/json'
         )
+ 
+    return response
+
+@app.route('/grouped_stats_json')
+def grouped_stats():
+
+    NAMES = WARZONE_CONFIG['NAMES']
+    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches',]
+    players = request.args.getlist('players')
+    interval = request.args.get('interval')
+    mi = request.args.get('mi')
+    only_teams_stats = request.args.get('team')
+
+    try:
+        x = int(mi)
+    except:
+        mi = 0
+
+    if mi == None or int(mi) < 0:
+        mi = 0
+
+    if int(mi) < 0:
+        mi = 0
+
+    if interval not in INTERVAL_NAMES:
+        interval = 'Week'
+
+    checked_players = []
+    for player in players:
+        if not isinstance(player, str) or player not in NAMES:
+            checked_players.append('jojopuppe')
+        else:
+            checked_players.append(player)
+
+    checked_players = list(dict.fromkeys(checked_players))
+
+    profil_query = IntervalConverter()
+    data = []
+
+    if only_teams_stats:
+        interval = 'Last-20-Matches'
+        data = profil_query.get_team_matches(checked_players)
+
+    else:
+        for player in checked_players:
+            data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
+
+    reorder = PropFirst()
+    real_data = reorder.reorganize(data, reorder.real_data)
+    perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
+
+    #return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
+
+    response = app.response_class(
+            response=json.dumps(real_data),
+            status=200,
+            mimetype='application/json'
+        )
+ 
     return response
 
 # @app.route('/squad_match/<match_id>')
