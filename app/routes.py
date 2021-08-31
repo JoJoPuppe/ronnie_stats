@@ -48,6 +48,22 @@ def matches_json():
         )
     return response
 
+
+@app.route('/detail_matches_json')
+def detail_matches_json():
+    player = request.args['player']
+    page = request.args['page']
+    match_query = MatchConverter()
+    matches = match_query.create_detail_match_data_paginate(player, page)
+    for match in matches:
+        del match['timestamp']
+    response = app.response_class(
+            response=json.dumps(matches),
+            status=200,
+            mimetype='application/json'
+        )
+    return response
+
 @app.route('/squad_match_json')
 def squad_match_json():
     matchId = request.args['matchid']
@@ -68,7 +84,7 @@ def squad_match_json():
 def grouped_stats():
 
     NAMES = WARZONE_CONFIG['NAMES']
-    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches',]
+    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Last-7-Days']
     players = request.args.getlist('players')
     interval = request.args.get('interval')
     mi = request.args.get('mi')
@@ -110,7 +126,7 @@ def grouped_stats():
 
     reorder = PropFirst()
     real_data = reorder.reorganize(data, reorder.real_data)
-    perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
+    # perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
 
     #return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
 
