@@ -47,7 +47,7 @@ class PropFirst(object):
         return stats_dict
 
 
-    def reorganize(self, player_list, data, format=True, invert=True):
+    def reorganize(self, player_list, data, format=True, invert=True, sort=True):
         prop_list = []
         prime_stats = [(stat, True) for stat in data['prime_stats']]
         side_stats = [(stat, False) for stat in data['side_stats']]
@@ -78,7 +78,8 @@ class PropFirst(object):
 
             prop_list.append(player_index)
 
-        prop_list = self.sort_properties(prop_list)
+        if sort:
+            prop_list = self.sort_properties(prop_list)
 
         if format:
             prop_list = self.format_data(prop_list, data['format_stats'])

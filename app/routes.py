@@ -125,7 +125,7 @@ def grouped_stats():
             data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
 
     reorder = PropFirst()
-    real_data = reorder.reorganize(data, reorder.real_data)
+    real_data = reorder.reorganize(data, reorder.real_data, sort=False)
     # perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
 
     #return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
