@@ -1,9 +1,12 @@
 import requests
 from app.device_token_handler import DeviceTokenHandler
+from stats_config import WARZONE_CONFIG
 
 
 dev_tokener = DeviceTokenHandler()
-reg_token = dev_tokener.load_token("ronnie_token")
+reg_token = dev_tokener.load_token(playername="ronnie_token")
+
+print(reg_token)
 
 tokenlist = []
 
@@ -12,7 +15,7 @@ if reg_token != None:
         token_dict = vars(token)
         tokenlist.append(token_dict['token'])
 
-
+print(tokenlist)
 data = {
         'registration_ids': tokenlist,
         'notification': {
@@ -23,8 +26,10 @@ data = {
 
 headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'key=AAAAtkktZeU:APA91bEjxIEKQQw-dw0NmPVIGwqgWbMHcFp9wiZY-Kf1ZxKyEwmurUcc3762SglyzsjfkdBaJdtfRvagyaK76-nraGHGAcn0BdBpOeUyPmiVQ_7gS2XVUvo8FFgiFi4PTUPnGteoxAiU'
+        'Authorization': WARZONE_CONFIG['CLOUD_API_KEY']
         }
 
-requests.post('https://fcm.googleapis.com/fcm/send', data=data, headers=headers)
+#response = requests.post('https://fcm.googleapis.com/fcm/send', data=data, headers=headers)
+#print(response.status_code)
+#print(response.text)
 

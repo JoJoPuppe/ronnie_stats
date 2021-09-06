@@ -87,7 +87,7 @@ def set_reg_token():
 
     if reg_token:
         dev_tokener = DeviceTokenHandler()
-        if dev_tokener.load_token(reg_token) != None:
+        if dev_tokener.load_token(reg_token) == None:
             dev_tokener.put_token(reg_token, "ronnie_token")
 
     response = app.response_class(
