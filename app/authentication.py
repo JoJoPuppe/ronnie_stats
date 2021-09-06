@@ -50,12 +50,11 @@ class Authentication(object):
             if write_new_cookie_file:
                 with open(self.cookie_file, "w+") as f:
                     json.dump(self.cookies, f)
-
             try:
-                pass
-                #os.remove(self.new_cookie_file)
+                os.remove(self.new_cookie_file)
             except:
-                print(f"{self.new_cookie_file}: does not exist")
+                pass
+                #print(f"{self.new_cookie_file}: does not exist")
 
 
     def load_cookies(self, path_to_file) -> dict:
@@ -68,4 +67,10 @@ class Authentication(object):
         except IOError:
             print("File does not exist")
             return {}
+
+    
+    def failed_cookies(self, index):
+        self.cookies['cookies'][index]['fails'] += 1
+        with open(self.cookie_file, "w+") as f:
+            json.dump(self.cookies, f)
 

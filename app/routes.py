@@ -6,12 +6,13 @@ from app.db_queries import DbQuery
 from app.convert_stats import DataConverter
 from app.convert_match_stats import MatchConverter
 from app.convert_interval_stats import IntervalConverter
+from app.device_token_handler import DeviceTokenHandler
 from app.PropFirst import PropFirst
 from app.bestof import Score
 from stats_config import WARZONE_CONFIG
 import json
 
-query = DbQuery()
+
 
 @app.route('/')
 @app.route('/index')
@@ -69,7 +70,6 @@ def squad_match_json():
     matchId = request.args['matchid']
     match_query = MatchConverter()
     match = match_query.create_squad_match_details(matchId)
-    print(match)
     for player in match:
         del player['timestamp']
     response = app.response_class(
@@ -79,6 +79,24 @@ def squad_match_json():
         )
  
     return response
+
+
+@app.route('/set_reg_token')
+def set_reg_token():
+    reg_token = request.args['token']
+
+    if reg_token:
+        dev_tokener = DeviceTokenHandler()
+        if dev_tokener.load_token(reg_token) != None:
+            dev_tokener.put_token(reg_token, "ronnie_token")
+
+    response = app.response_class(
+            response=json.dumps({'response': 'token inserted successfully'}),
+            status=200,
+            mimetype='application/json'
+        )
+    return response
+
 
 @app.route('/grouped_stats_json')
 def grouped_stats():

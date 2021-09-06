@@ -1,6 +1,17 @@
 from app import db
 from datetime import datetime
 
+
+class DeviceTokens(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    playername = db.Column(db.String(64))
+    token = db.Column(db.String(128))
+
+    def __repr__(self):
+        return f'Player: {self.playername}, timestamp: {self.timestamp.strftime("%H:%M:%S") }'
+
+
 class LifeTimeStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

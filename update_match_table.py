@@ -3,6 +3,7 @@ from app import db
 from app.models import MatchStats
 from app.get_warzone_stats import WarzoneStats
 from app.authentication import Authentication
+from app.notifications import Notification
 import time
 from sqlalchemy import and_
 import re
@@ -33,9 +34,11 @@ else:
             if match_data == None:
                 logging.error(f"cant get match data: {name}")
                 print(f"cant get macht data: {name}")
-                auth.cookies_failed(c)
+                auth.failed_cookies(c)
                 break
             else:
+                match_notification = Notification(name)
+
                 cookies_working = True
                 jdata = get_stat_obj.collect_match_data(match_data)
                 cnt = 0
@@ -53,9 +56,18 @@ else:
                     q = MatchStats.query.filter(and_(MatchStats.matchID == matchid,
                                                         MatchStats.playername == converted_playername)).first()
                     if q == None:
+                        if name == converted_playername:
+                            match_notification.add_match(
+                                    kills=m['MatchPlayerStats']['kills'],
+                                    deaths=m['MatchPlayerStats']['deaths'],
+                                    damage_done=m['MatchPlayerStats']['damageDone'])
+
                         epoch = m['MatchStat']['utcStartSeconds']
                         start_match_time = time.strftime("%a, %d%b%Y %H:%M:%S", time.localtime(epoch))
                         logging.info(f'match {start_match_time} of {name} added')
+
+                             
+
                     else:
                         #print(f"match from {name} already in db")
                         continue
@@ -111,6 +123,7 @@ else:
 
             print(f'{cnt} matches of {name} added. wait 3s')
             logging.info(f'{cnt} matches of {name} added. wait 3s')
+            match_notification.send_notification_report()
             time.sleep(3)
 
     db.session.commit()
