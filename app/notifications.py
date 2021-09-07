@@ -1,5 +1,6 @@
 from app.device_token_handler import DeviceTokenHandler
 from stats_config import WARZONE_CONFIG
+import requests
 import logging
 
 LOG_FILE = WARZONE_CONFIG['LOGFILE']
