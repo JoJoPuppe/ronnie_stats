@@ -84,17 +84,26 @@ def squad_match_json():
 @app.route('/set_reg_token')
 def set_reg_token():
     reg_token = request.args['token']
+    x = "not putted"
+    try:
+        if reg_token:
+            dev_tokener = DeviceTokenHandler()
+            if not dev_tokener.load_token_by_token(reg_token):
+                x = "putted"
+                dev_tokener.put_token(reg_token, "ronnie_token")
 
-    if reg_token:
-        dev_tokener = DeviceTokenHandler()
-        if dev_tokener.load_token(reg_token) == None:
-            dev_tokener.put_token(reg_token, "ronnie_token")
+        response = app.response_class(
+                response=json.dumps({'response': f'token {x} successfully, {reg_token}'}),
+                status=200,
+                mimetype='application/json'
+            )
+    except:
+        response = app.response_class(
+                response=json.dumps({'response': 'error'}),
+                status=400,
+                mimetype='application/json'
+            )
 
-    response = app.response_class(
-            response=json.dumps({'response': 'token inserted successfully'}),
-            status=200,
-            mimetype='application/json'
-        )
     return response
 
 

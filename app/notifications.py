@@ -1,9 +1,9 @@
-import firebase_admin
-from firebase_admin import messaging
 from app.device_token_handler import DeviceTokenHandler
+from stats_config import WARZONE_CONFIG
+import logging
 
-
-default_app = firebase_admin.initialize_app()
+LOG_FILE = WARZONE_CONFIG['LOGFILE']
+logging.basicConfig(level=logging.INFO, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Notification(object):
     def __init__(self, name: str):
@@ -39,7 +39,7 @@ class Notification(object):
 
     def send_notification_report(self):
         dev_tokener = DeviceTokenHandler()
-        reg_token = dev_tokener.load_token("ronnie_token")
+        reg_token = dev_tokener.load_token_by_name("ronnie_token")
 
         tokenlist = []
 
@@ -49,17 +49,23 @@ class Notification(object):
                 token_dict = vars(token)
                 tokenlist.append(token_dict['token'])
 
-            message = messaging.MulticastMessage(
-                    notification=messaging.Notification(
-                        title=self.create_title_string(),
-                        body=self.create_body_string()
-                        ),
-                    tokens=tokenlist
-                    )
-            response = messaging.send_multicast(message)
-            print(f'Successfully sent {response.success_count} messages:')
-        else:
-            print(f'no token yet')
+        data = {
+                'registration_ids': tokenlist,
+                'notification': {
+                    'title': self.create_title_string(),
+                    'body': self.create_body_string(),
+                    },
+                }
+
+        headers = {
+                'Content-Type': 'application/json',
+                'Authorization': WARZONE_CONFIG['CLOUD_API_KEY']
+                }
+
+        response = requests.post('https://fcm.googleapis.com/fcm/send', json=data, headers=headers)
+        logging.info(f"notification response code: {response.status_code}")
+        logging.info(f"notification response body: {response.text}")
+
 
         
         

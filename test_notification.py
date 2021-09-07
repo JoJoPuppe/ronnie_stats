@@ -4,9 +4,9 @@ from stats_config import WARZONE_CONFIG
 
 
 dev_tokener = DeviceTokenHandler()
-reg_token = dev_tokener.load_token(playername="ronnie_token")
+reg_token = dev_tokener.load_token_by_name("ronnie_token")
 
-print(reg_token)
+print(dev_tokener.get_all_rows())
 
 tokenlist = []
 
@@ -15,12 +15,11 @@ if reg_token != None:
         token_dict = vars(token)
         tokenlist.append(token_dict['token'])
 
-print(tokenlist)
 data = {
         'registration_ids': tokenlist,
         'notification': {
             'title': 'I am from PI',
-            'body': 'es gibt mich wirklich!!!!!',
+            'body': 'es gibt mich wirklich',
             },
         }
 
@@ -29,7 +28,7 @@ headers = {
         'Authorization': WARZONE_CONFIG['CLOUD_API_KEY']
         }
 
-#response = requests.post('https://fcm.googleapis.com/fcm/send', data=data, headers=headers)
-#print(response.status_code)
-#print(response.text)
+response = requests.post('https://fcm.googleapis.com/fcm/send', json=data, headers=headers)
+print(response.status_code)
+print(response.text)
 

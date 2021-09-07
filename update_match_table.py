@@ -57,6 +57,7 @@ else:
                                                         MatchStats.playername == converted_playername)).first()
                     if q == None:
                         if name == converted_playername:
+                            pass
                             match_notification.add_match(
                                     kills=m['MatchPlayerStats']['kills'],
                                     deaths=m['MatchPlayerStats']['deaths'],
@@ -123,7 +124,8 @@ else:
 
             print(f'{cnt} matches of {name} added. wait 3s')
             logging.info(f'{cnt} matches of {name} added. wait 3s')
-            match_notification.send_notification_report()
+            if match_notification.matches != 0:
+                match_notification.send_notification_report()
             time.sleep(3)
 
     db.session.commit()

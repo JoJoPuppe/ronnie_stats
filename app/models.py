@@ -9,7 +9,7 @@ class DeviceTokens(db.Model):
     token = db.Column(db.String(128))
 
     def __repr__(self):
-        return f'Player: {self.playername}, timestamp: {self.timestamp.strftime("%H:%M:%S") }'
+        return f'Player: {self.playername}, timestamp: {self.timestamp.strftime("%H:%M:%S") }, tkn: {self.token}'
 
 
 class LifeTimeStats(db.Model):
