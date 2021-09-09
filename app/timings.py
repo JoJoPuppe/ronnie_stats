@@ -16,9 +16,9 @@ class Timings(object):
         return calendar.monthrange(ref_time.year, ref_time.month)[1]
 
     def get_interval_break(self, timestamp, interval):
-        DAY_BREAK = 6
+        DAY_BREAK = 2
 
-        if self.int_string[7]:
+        if interval == self.int_string[7]:
             return timestamp
 
         def get_int_diff(daily_diff, interval):
@@ -105,7 +105,11 @@ class Timings(object):
         last_interval_start_ts = self.get_interval_break(last_interval_start, interval)
         current_interval_end_ts = self.get_interval_break(end_time_timestamp, interval)
 
-        print(current_interval_end_ts)
+        print(interval)
+
+        utc_time = [current_interval_start_ts, last_interval_start_ts, current_interval_end_ts, multi_diff, last_interval_start, end_time_timestamp]
+        for t in utc_time:
+            print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(t)))
 
         return [last_interval_start_ts, current_interval_start_ts, current_interval_end_ts]
 

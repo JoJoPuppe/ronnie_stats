@@ -3,11 +3,11 @@ from app import db
 from app.models import MatchStats
 from app.get_warzone_stats import WarzoneStats
 from app.authentication import Authentication
-from app.notifications import Notification
 import time
 from sqlalchemy import and_
 import re
 import logging
+from update_notifications import send_notification
 
 from stats_config import WARZONE_CONFIG
 
@@ -37,8 +37,6 @@ else:
                 auth.failed_cookies(c)
                 break
             else:
-                match_notification = Notification(name)
-
                 cookies_working = True
                 jdata = get_stat_obj.collect_match_data(match_data)
                 cnt = 0
@@ -56,13 +54,6 @@ else:
                     q = MatchStats.query.filter(and_(MatchStats.matchID == matchid,
                                                         MatchStats.playername == converted_playername)).first()
                     if q == None:
-                        if name == converted_playername:
-                            pass
-                            match_notification.add_match(
-                                    kills=m['MatchPlayerStats']['kills'],
-                                    deaths=m['MatchPlayerStats']['deaths'],
-                                    damage_done=m['MatchPlayerStats']['damageDone'])
-
                         epoch = m['MatchStat']['utcStartSeconds']
                         start_match_time = time.strftime("%a, %d%b%Y %H:%M:%S", time.localtime(epoch))
                         logging.info(f'match {start_match_time} of {name} added')
@@ -124,8 +115,7 @@ else:
 
             print(f'{cnt} matches of {name} added. wait 3s')
             logging.info(f'{cnt} matches of {name} added. wait 3s')
-            if match_notification.matches != 0:
-                match_notification.send_notification_report()
             time.sleep(3)
 
     db.session.commit()
+    send_notification()

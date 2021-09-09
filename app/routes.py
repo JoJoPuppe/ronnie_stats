@@ -111,11 +111,18 @@ def set_reg_token():
 def grouped_stats():
 
     NAMES = WARZONE_CONFIG['NAMES']
-    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Last-7-Days']
+    INTERVAL_NAMES = ['Day', 'Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Last-7-Days', 'Custom']
+    page = request.args.get('page')
     players = request.args.getlist('players')
     interval = request.args.get('interval')
+    start = request.args.get('start')
+    end = request.args.get('end')
     mi = request.args.get('mi')
     only_teams_stats = request.args.get('team')
+    paginate = False
+    if page != None:
+       paginate = True 
+       page = int(page)
 
     try:
         x = int(mi)
@@ -149,16 +156,21 @@ def grouped_stats():
 
     else:
         for player in checked_players:
-            data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
+            if interval == 'Custom':
+                data.append([profil_query.get_custom_time_stats(player, start, end)])
+            else:
+                data.append(profil_query.consolidate_interval_stats(player, interval, int(mi), paginate=paginate, page=page))
 
     reorder = PropFirst()
-    real_data = reorder.reorganize(data, reorder.real_data, sort=False)
+    converted_list_data = reorder.convert_data_from_list(data) 
+    data_list = reorder.reorganize_batch(converted_list_data, reorder.real_data, sort=False)
+
     # perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
 
     #return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
 
     response = app.response_class(
-            response=json.dumps(real_data),
+            response=json.dumps(data_list),
             status=200,
             mimetype='application/json'
         )

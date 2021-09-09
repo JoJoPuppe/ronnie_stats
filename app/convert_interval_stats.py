@@ -10,7 +10,7 @@ utilities = Utilities()
 
 class IntervalConverter(object):
     def __init__(self):
-        self.int_string = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Day', 'Last-7-Days']
+        self.int_string = ['Week', 'Month', 'Year', 'Last-30-Matches', 'Last-50-Matches', 'Last-100-Matches', 'Day', 'Last-7-Days', 'Custom']
         self.zero_stat = self.get_zero_stats()
 
 
@@ -96,6 +96,56 @@ class IntervalConverter(object):
 
         return time_interval_stats_dict
 
+
+    def get_custom_time_stats(self, playername, interval_start, interval_end):
+        # int_timings = Timings()
+        # time_interval_stats_dict = {}
+        # interval_length = interval_start - interval_end
+
+        q = query.from_database_time_stats(playername, interval_start, interval_end)
+        match_list = self.clean_interval_list(q)
+
+        if not match_list:
+            return []
+
+        return self.setup_match_count_stats(playername, match_list)
+
+        # interval_list = self.get_interval_list(q, interval_start, interval_length, 1)
+        # interval_list = interval_list[::-1]
+
+
+        # interval_sum_list = []
+        # for i in interval_list:
+        #     interval_sum = self.sum_stats(i)
+        #     interval_average = self.average_sum_data(interval_sum)
+        #     interval_sum_list.append(interval_average)
+
+        # tick_list = self.get_ticklist(interval_list, interval_timings, interval)
+
+        # percent_diff_dict = self.add_percent_diff(interval_sum_list)
+
+        # if interval == int_timings.int_string[6]:
+        #     ticks = []
+        #     for tick in tick_list[0]:
+        #         ticks.append(self.average_sum_data(self.sum_stats([tick])))
+        # else:
+        #     ticks = []
+        #     for tick in tick_list:
+        #         ticks.append(self.average_sum_data(self.sum_stats(tick)))
+
+        # interval_sum_list.append(percent_diff_dict)
+
+        # #ticks = self.aggregate_stats(ticks)
+
+        # time_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(interval_timings[1])
+        # time_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(interval_timings[2])
+        # time_interval_stats_dict['inter'] = interval_sum_list
+        # time_interval_stats_dict['ticks'] = ticks
+        # time_interval_stats_dict['ticks_length'] = len(ticks)
+        # time_interval_stats_dict['playername'] = playername
+
+        # return time_interval_stats_dict
+
     def get_team_matches(self, team):
         #team = ['dlt_orko', 'neuner_eisen', 'jojopuppe']
         team_data = query.from_database_team_matches(team)
@@ -115,11 +165,8 @@ class IntervalConverter(object):
 
     def get_match_count_stats(self, playername, interval):
         count = {self.int_string[3]: 30, self.int_string[4]: 50, self.int_string[5]: 100}
-
         interval_count = count[interval]
-
         q = query.from_database_count_stats(playername, interval_count)
-
         match_list = self.clean_interval_list(q)
 
         return self.setup_match_count_stats(playername, match_list)
@@ -146,11 +193,20 @@ class IntervalConverter(object):
         return count_interval_stats_dict
 
 
-    def consolidate_interval_stats(self, playername, interval, interval_diff):
+    def consolidate_interval_stats(self, playername, interval, interval_diff, paginate=False, page=None, per_page=8):
         if interval in [self.int_string[0], self.int_string[1], self.int_string[2], self.int_string[6], self.int_string[7]]:
-            return self.get_time_stats(playername, interval, interval_diff)
+            page_list = []
+            if paginate:
+                for p in range(per_page):
+                    page_index = ((page - 1) * per_page) + 1 + p
+                    interval_diff = page_index
+                    page_list.append(self.get_time_stats(playername, interval, interval_diff))
+
+                return page_list
+            else:
+                return [self.get_time_stats(playername, interval, interval_diff)]
         else:
-            return self.get_match_count_stats(playername, interval)
+            return [self.get_match_count_stats(playername, interval)]
 
 
     def aggregate_stats(self, stats):

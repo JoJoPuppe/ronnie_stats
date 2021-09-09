@@ -32,6 +32,19 @@ class PropFirst(object):
         self.reverse_sort = ['teamPlacement_noSum', 'deaths', 'damageTaken', 'deaths_hour', 'damageTaken_hour']
 
 
+    def convert_data_from_list(self, data):
+        reorder_data = []
+        if not data:
+            return []
+        while len(data[len(data) - 1]) > 0:
+            player_list = []
+            for i in range(len(data)):
+                player_list.append(data[i].pop())
+            reorder_data.append(player_list)
+        reorder_data.reverse()
+        return reorder_data
+
+
     def rows_to_columns(self, game_data):
         if game_data[0] == None:
             return game_data
@@ -46,6 +59,11 @@ class PropFirst(object):
 
         return stats_dict
 
+    def reorganize_batch(self, player_list_list, data, format=True, invert=True, sort=True):
+        data_list = []
+        for d in player_list_list:
+            data_list.append(self.reorganize(d, data, format, invert, sort))
+        return data_list
 
     def reorganize(self, player_list, data, format=True, invert=True, sort=True):
         prop_list = []

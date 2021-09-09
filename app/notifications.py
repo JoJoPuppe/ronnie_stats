@@ -15,6 +15,12 @@ class Notification(object):
         self.kd = 0.0
         self.damage_done = 0
 
+    def set_stats(self, kills, deaths, damage_done, matches):
+        self.kills = kills
+        self.deaths = deaths
+        self.damage_done = damage_done
+        self.matches = matches
+
     
     def add_match(self, kills: int, deaths:int, damage_done:int):
         self.kills += kills
@@ -43,7 +49,7 @@ class Notification(object):
         reg_token = dev_tokener.load_token_by_name("ronnie_token")
 
         tokenlist = []
-
+        
 
         if reg_token != None:
             for token in reg_token:
@@ -66,6 +72,7 @@ class Notification(object):
         response = requests.post('https://fcm.googleapis.com/fcm/send', json=data, headers=headers)
         logging.info(f"notification response code: {response.status_code}")
         logging.info(f"notification response body: {response.text}")
+        print(response.text)
 
 
         
