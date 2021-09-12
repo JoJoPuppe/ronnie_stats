@@ -198,7 +198,7 @@ class IntervalConverter(object):
             page_list = []
             if paginate:
                 for p in range(per_page):
-                    page_index = ((page - 1) * per_page) + 1 + p
+                    page_index = ((page - 1) * per_page) + p
                     interval_diff = page_index
                     page_list.append(self.get_time_stats(playername, interval, interval_diff))
 

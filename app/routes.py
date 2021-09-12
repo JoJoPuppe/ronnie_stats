@@ -235,10 +235,11 @@ def player_profil():
             data.append(profil_query.consolidate_interval_stats(player, interval, int(mi)))
 
     reorder = PropFirst()
-    real_data = reorder.reorganize(data, reorder.real_data)
-    perf_data = reorder.reorganize(data, reorder.perf_data, invert=False)
+    converted_data = reorder.convert_data_from_list(data)
+    real_data = reorder.reorganize_batch(converted_data, reorder.real_data)
+    perf_data = reorder.reorganize_batch(converted_data, reorder.perf_data, invert=False)
 
-    return render_template('weekly.html', data=real_data, pdata=perf_data, names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
+    return render_template('weekly.html', data=real_data[0], pdata=perf_data[0], names=NAMES, interval_names=INTERVAL_NAMES, interval=interval)
 
 @app.route('/skill')
 def skill():
