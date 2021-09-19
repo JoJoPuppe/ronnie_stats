@@ -87,6 +87,7 @@ class PropFirst(object):
                 player_props['inter_start'] = player_list[p]['inter_start']
                 player_props['inter_end'] = player_list[p]['inter_end']
                 player_props['playername'] = player_list[p]['playername']
+                player_props['interval_count'] = player_list[p]['interval_count']
                 player_props['inter'] = player_list[p]['inter'][prop[0]]
                 player_props['ticks'] = player_list[p]['ticks'][prop[0]]
                 player_props['ticks_length'] = self.max_ticks(player_list)

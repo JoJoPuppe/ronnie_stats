@@ -89,6 +89,7 @@ class IntervalConverter(object):
 
         time_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(interval_timings[1])
         time_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(interval_timings[2])
+        time_interval_stats_dict['interval_count'] = interval_diff
         time_interval_stats_dict['inter'] = interval_sum_list
         time_interval_stats_dict['ticks'] = ticks
         time_interval_stats_dict['ticks_length'] = len(ticks)
