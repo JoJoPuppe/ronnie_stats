@@ -116,6 +116,12 @@ class MatchStats(db.Model):
     circle5 = db.Column(db.Integer)
     circle6 = db.Column(db.Integer)
     circle7 = db.Column(db.Integer)
-
+    contribution_kills = db.Column(db.Float)
+    contribution_downs = db.Column(db.Float)
+    contribution_deaths = db.Column(db.Float)
+    contribution_damageDone = db.Column(db.Float)
+    contribution_damageTaken = db.Column(db.Float)
+    contribution_objectiveReviver = db.Column(db.Float)
+    contribution_distanceTraveled = db.Column(db.Float)
     def __repr__(self):
         return f'Match: {self.matchID}, player: {self.playername}, timestamp: {self.timestamp.strftime("%m-%d-%H:%M")}'

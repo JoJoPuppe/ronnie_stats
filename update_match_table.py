@@ -107,7 +107,14 @@ else:
                                 longestStreak = int(m['MatchPlayerStats']['longestStreak']),
                                 teamPlacement = int(m['MatchPlayerStats']['teamPlacement']),
                                 damageDone = int(m['MatchPlayerStats']['damageDone']),
-                                damageTaken = int(m['MatchPlayerStats']['damageTaken']))
+                                damageTaken = int(m['MatchPlayerStats']['damageTaken']),
+                                contribution_kills = float(m['MatchPlayerStats']['contribution_kills']),
+                                contribution_downs = float(m['MatchPlayerStats']['contribution_downs']),
+                                contribution_deaths = float(m['MatchPlayerStats']['contribution_deaths']),
+                                contribution_damageDone = float(m['MatchPlayerStats']['contribution_damageDone']),
+                                contribution_damageTaken = float(m['MatchPlayerStats']['contribution_damageTaken']),
+                                contribution_objectiveReviver = float(m['MatchPlayerStats']['contribution_objectiveReviver']),
+                                contribution_distanceTraveled = float(m['MatchPlayerStats']['contribution_distanceTraveled']))
 
                     db.session.add(record)
                     cnt += 1

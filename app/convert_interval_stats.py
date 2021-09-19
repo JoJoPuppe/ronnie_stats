@@ -186,6 +186,7 @@ class IntervalConverter(object):
         count_interval_stats_dict = {}
         count_interval_stats_dict['inter_start'] = utilities.convert_epoch_time(match_list[0]['utcStartSeconds'])
         count_interval_stats_dict['inter_end'] = utilities.convert_epoch_time(match_list[-1]['utcStartSeconds'])
+        count_interval_stats_dict['interval_count'] = 0
         count_interval_stats_dict['inter'] = [interval_sum_list]
         count_interval_stats_dict['ticks'] = ticks
         count_interval_stats_dict['ticks_length'] = len(ticks)
@@ -235,7 +236,8 @@ class IntervalConverter(object):
         per_hour_stats = ['score', 'kills', 'deaths', 'damageDone', 'damageTaken', 'distanceTraveled', 'revives', 'shopping', 'boxesOpen',
                           'pickupTablet', 'totalXp', 'downs', 'headshots']
 
-        average_stats = ['teamPlacement', 'percentTimeMoving']
+        average_contributions = ['contribution_kills', 'contribution_downs', 'contribution_damageDone', 'contribution_damageTaken',
+                        'contribution_distanceTraveled', 'contribution_objectiveReviver', 'contribution_deaths']
 
         hours = sum_stats['timePlayed'] / 60 / 60 if sum_stats['timePlayed'] != 0 else 1
         gamecount = sum_stats['game_count'] if sum_stats['game_count'] != 0 else 1
@@ -257,6 +259,9 @@ class IntervalConverter(object):
         sum_stats['teamPlacement_noSum'] = round(sum_stats['teamPlacement'] / gamecount, 2)
         sum_stats['kdRatio_noSum'] = round(sum_stats['kills'] / sum_stats['deaths'], 2) if sum_stats['deaths'] != 0 else 0
         sum_stats['percentTimeMoving_game'] = round(sum_stats['percentTimeMoving'] / gamecount)
+        for cont_stat in average_contributions:
+            sum_stats[cont_stat] = round(sum_stats[cont_stat] / gamecount, 1)
+        
 
         return sum_stats
 

@@ -173,10 +173,80 @@ class WarzoneStats(object):
 
 
             validated_data = self.validate_match_data(collected_data)
-
             validate_match_list.append(validated_data)
 
+        
+        matchid_dict = self.group_by_matchid(validate_match_list)
+        matchid_dict = self.add_contribution(matchid_dict)
+
+        validate_match_list = self.expand_grouped_by_matchid(matchid_dict)
+
+
         return validate_match_list
+
+
+    def group_by_matchid(self, data_list):
+        output_dict = {}
+        for match in data_list:
+            current_matchid = match['MatchStat']['matchID']
+            if current_matchid not in output_dict:
+                output_dict[current_matchid] = [match]
+            else:
+                output_dict[current_matchid].append(match)
+        return output_dict
+
+                
+    def expand_grouped_by_matchid(self, matchid_dict):
+        output_list = []
+        for k,v in matchid_dict.items():
+            output_list.extend(v)
+
+        return output_list
+
+
+    def get_downs(self, data):
+        circle_downs = ['objectiveBrDownEnemyCircle1', 'objectiveBrDownEnemyCircle2',
+                              'objectiveBrDownEnemyCircle3', 'objectiveBrDownEnemyCircle4', 'objectiveBrDownEnemyCircle5',
+                              'objectiveBrDownEnemyCircle6', 'objectiveBrDownEnemyCircle7', 'objectiveReviver' ]
+        player_cirle_downs = []
+        for circle in circle_downs:
+            player_cirle_downs.append(data[circle])
+
+        return sum(player_cirle_downs)
+
+
+    def add_contribution(self, matchid_dict):
+        for k, v in matchid_dict.items():
+            matchid_dict[k] = self.add_team_contribution(v)
+
+        return matchid_dict
+
+
+    def add_team_contribution(self, validated_data_list):
+
+        property_list = ['kills', 'downs', 'damageDone', 'damageTaken', 'deaths', 'distanceTraveled', 'objectiveReviver']
+
+        for prop in property_list:
+            prop_single_list = []
+            for match_data in validated_data_list:
+                if prop == 'downs':
+                    prop_single_list.append(self.get_downs(match_data['MatchPlayerStats']))
+                else:
+                    prop_single_list.append(match_data['MatchPlayerStats'][prop])
+
+            team_prop_sum = sum(prop_single_list)
+            contribution_field = 'contribution_' + prop 
+            for m in range(len(validated_data_list)):
+                if team_prop_sum == 0:
+                    validated_data_list[m]['MatchPlayerStats'][contribution_field] = 0.0
+                    continue
+                validated_data_list[m]['MatchPlayerStats'][contribution_field] =\
+                    round(100 / team_prop_sum * prop_single_list[m], 1)
+
+        return validated_data_list
+
+
+
 
     def validate_match_data(self, raw_data):
         MATCH_STATS = ['utcStartSecond', 'utcEndSeconds', 'matchID', 'duration', 'playerCount', 'teamCount', 'playername', 'gameMode']
@@ -197,6 +267,7 @@ class WarzoneStats(object):
                 raw_data['MatchPlayerStats'][stat] = 0
 
         return raw_data
+
 
     def validate_data(self, raw_data):
         LIFE_TIME_STATS_KEYS = ['name', 'level', 'wins', 'kills', 'kdRatio', 'downs', 'deaths',

@@ -6,13 +6,22 @@ utilities = Utilities()
 class PropFirst(object):
     def __init__(self):
         self.real_data = {}
+        self.real_data['contribution_stats'] = {'kills': 'contribution_kills', 'downs': 'contribution_downs'}
         self.real_data['prime_stats'] = ['teamPlacement_noSum', 'kdRatio_noSum', 'kills', 'downs', 'deaths', 'score', 'damageDone', 'damageTaken']
-        self.real_data['side_stats'] = ['game_count', 'percentTimeMoving_game', 'revives', 'shopping', 'boxesOpen', 'headshots', 'pickupTablet', 'distanceTraveled', 'timePlayed']
+        self.real_data['side_stats'] = ['game_count', 'percentTimeMoving_game', 'revives', 'shopping', 'boxesOpen', 'headshots', 'pickupTablet', 'distanceTraveled', 'timePlayed', 'contribution_downs', 'contribution_kills', 'contribution_damageDone', 'contribution_damageTaken', 'contribution_objectiveReviver',
+                'contribution_deaths', 'contribution_distanceTraveled']
 
         self.real_data['display_name'] = {'teamPlacement_noSum': 'Placement', 'kdRatio_noSum': 'KD', 'kills': 'Kills', 'downs': 'Downs', 'deaths': 'Deaths',
                              'score': 'Score', 'damageDone': 'Damage Done', 'damageTaken': 'Damage Taken', 'game_count': 'Games',
                              'percentTimeMoving_game': '%Moving/Game', 'revives': 'Revives', 'shopping': 'Shopped', 'boxesOpen': 'Cache Open',
-                             'headshots': 'Headshots', 'pickupTablet': 'Contracts', 'distanceTraveled': 'Distance', 'timePlayed': 'Playtime'}
+                             'headshots': 'Headshots', 'pickupTablet': 'Contracts', 'distanceTraveled': 'Distance', 'timePlayed': 'Playtime',
+                             'contribution_downs': 'Downs Team Contribution',
+                             'contribution_kills': 'Kills Team Contribution',
+                             'contribution_deaths': 'Deaths Team Contribution',
+                             'contribution_damageDone': 'Damage Done Team Contribution',
+                             'contribution_damageTaken': 'Damage Taken Team Contribution',
+                             'contribution_objectiveReviver': 'Revives Team Contribution',
+                             'contribution_distanceTraveled': 'Distance Team Contribution',}
 
         self.real_data['format_stats'] = {'big_num': [5,6,7], 'distance': [15], 'time':[16]}
 

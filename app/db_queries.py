@@ -36,7 +36,7 @@ class DbQuery(object):
         return MatchStats.query.filter(MatchStats.matchID == matchID).all()
 
     def from_database_time_stats(self, playername, start_time, end_time):
-        return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode != 'Blood Money', MatchStats.gameMode != '3er PLUNDER', MatchStats.gameMode != '2er PLUNDER', MatchStats.gameMode != '4er PLUNDER', MatchStats.utcStartSeconds > start_time, MatchStats.utcStartSeconds < end_time).order_by(desc(MatchStats.utcStartSeconds)).all()
+        return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode != 'Blood Money', MatchStats.gameMode != '3er PLUNDER', MatchStats.gameMode != '2er PLUNDER', MatchStats.gameMode != '4er PLUNDER', MatchStats.utcEndSeconds > start_time, MatchStats.utcEndSeconds < end_time).order_by(desc(MatchStats.utcStartSeconds)).all()
 
     def from_database_count_stats(self, playername, match_count):
         return MatchStats.query.filter(MatchStats.playername == playername, MatchStats.gameMode!= 'Blood Money', MatchStats.gameMode != '3er PLUNDER', MatchStats.gameMode != '2er PLUNDER', MatchStats.gameMode != '4er PLUNDER').order_by(desc(MatchStats.utcStartSeconds)).limit(match_count).all()
